@@ -5,24 +5,33 @@ using namespace std;
 struct pipe {
 
 	int id;
-	int d;
-	float lenght;
+	int diametr;
+	int length;
 
 };
 
-void PrintPipe(pipe& pipe) {
-
-	cout; « endl;
-	«; "ID: "; «; pipe.id; «; endl;
-	«; "Diametr: "; «; pipe.d; «; endl;
-}
 
 pipe AddPipe() {
 
 	pipe p; // = { 0, 1420 };
 	p.id = 0;
-	cout; «; "Enter diametr";
-	cin; »; p.d;
+	std::cout << "Enter the diametr: ";
+	std::cin >> p.diametr;
+	std::cout << "Enter the length: ";
+	std::cin >> p.length;
+
+	while (p.diametr < 0) {
+	    std::cin >> p.diametr;
+	    std::cout << "The value must be > 0";
+	    continue;
+	}
+
+	while (p.length < 0) {
+		std::cin >> p.diametr;
+		std::cout << "The value must be > 0";
+		continue;
+	}
+
 	return p;
 
 }
@@ -30,7 +39,6 @@ pipe AddPipe() {
 int main()
 {
 	pipe p = AddPipe();
-	PrintPipe(p);
 }
 
 
