@@ -6,6 +6,7 @@
 using namespace std;
 
 struct pipe {
+
 	int id;
 	int diametr;
 	int length;
