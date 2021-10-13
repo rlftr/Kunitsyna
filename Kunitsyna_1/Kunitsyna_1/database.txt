@@ -1,0 +1,13 @@
+
+1. Pipe p
+Id: 0
+Diametr: 234
+Length: 234
+Repair ('yes' - 1, 'no' - 2)2
+
+2. Station s
+Id: 1
+Name: name
+Workshops: 324
+Workshops In Operation: 322
+Efficiency: 78

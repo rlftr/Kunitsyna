@@ -5,6 +5,19 @@
 #include <istream>
 using namespace std;
 
+void menu()
+{
+	std::cout << "\n   Menu." << endl;
+	std::cout << "1. Add Pipe\n"
+		<< "2. Add Station\n"
+		<< "3. Viewing all objects\n"
+		<< "4. Edit Pipe\n"
+		<< "5. Edit Station\n"
+		<< "6. Save\n"
+		<< "7. Load\n"
+		<< "0. Exit\n";
+}
+
 struct pipe {
 	int id;
 	int diametr;
@@ -14,44 +27,44 @@ struct pipe {
 
 pipe AddPipe() {
 
-	pipe p; // = { 0, 1420 };
+	pipe p;
 	p.id = 0;
 	std::cout << "Enter the diametr: ";
 	std::cin >> p.diametr;
-	std::cout << "Enter the length: ";
-	std::cin >> p.length;
-	std::cout << "Is the pipe under repair? ('yes'- 1 or 'no'- 2):  ";
-	std::cin >> p.repair;
 
 	while (p.diametr <= 0) {
-	    std::cin >> p.diametr;
-	    std::cout << "The value must be > 0";
-	    continue;
-	}
-
-	while (p.length <= 0) {
-		std::cin >> p.length;
-		std::cout << "The value must be > 0";
+		std::cout << "The value must be > 0. Try again: ";
+		std::cin >> p.diametr;
 		continue;
 	}
 
+	std::cout << "Enter the length: ";
+	std::cin >> p.length;
+
+	while (p.length <= 0) {
+		std::cout << "The value must be > 0. Try again: ";
+		std::cin >> p.length;
+		continue;
+	}
+
+	std::cout << "Is the pipe under repair? ('yes'- 1 or 'no'- 2):  ";
+	std::cin >> p.repair;
+
 	while (p.repair < 1 || p.repair > 2) {
+		std::cout << "Please enter 1(yes) or 2(no): ";
 		std::cin >> p.repair;
-		std::cout << "Please enter 1(yes) or 2(no)";
+		continue;
 	}
 	return p;
-
 }
 
 struct station {
-
 	string name;
 	int workshops;
 	int WorkshopsInOperation;
 	int efficiency;
 	int id;
 }
-
 
 ; station AddStation() {
 
@@ -61,64 +74,70 @@ struct station {
 	std::cin >> s.name;
 	std::cout << "Enter the number of workshops: ";
 	std::cin >> s.workshops;
+
+	while (s.workshops < 0) {
+		std::cout << "The value must be > 0. Try again: ";
+		std::cin >> s.workshops;
+		continue;
+	}
+
 	std::cout << "Enter the number of workshops in operation: ";
 	std::cin >> s.WorkshopsInOperation;
+
+	while (s.WorkshopsInOperation < 0) {
+		std::cout << "The value must be >= 0. Try again: ";
+		std::cin >> s.WorkshopsInOperation;
+		continue;
+	}
+
+	while (s.WorkshopsInOperation > s.workshops) {
+		std::cout << "Number of working workshops can't be > number of workshops. Try again: ";
+		std::cin >> s.WorkshopsInOperation;
+		continue;
+	}
+
 	std::cout << "Enter the efficiency (%): ";
 	std::cin >> s.efficiency;
 
-	while (s.workshops < 0) {
-		std::cin >> s.workshops;
-		std::cout << "The value must be > 0";
-		continue;
-	}
-
-	while (s.WorkshopsInOperation < 0) {
-		std::cin >> s.WorkshopsInOperation;
-		std::cout << "The value must be >= 0";
-		continue;
-	}
-	 
-	while (s.WorkshopsInOperation > s.workshops) {
-		std::cin >> s.WorkshopsInOperation;
-		std::cout << "Number of working workshops can't be > number of workshops";
-		continue;
-	}
-
-	while (s.efficiency < 0 && s.efficiency > 100) {
+	while (s.efficiency < 0 || s.efficiency > 100) {
+		std::cout << "The value must be >= 0 and <= 100. Try again: ";
 		std::cin >> s.efficiency;
-		std::cout << "The value must be >= 0 and <= 100";
 		continue;
 	}
 
 	return s;
-	
+
 }
 
-void PipeEdit(pipe p) {
+pipe PipeEdit(pipe& p) {
 	std::cout << "Is the pipe under repair? ('yes'- 1 or 'no'- 2): ";
 	std::cin >> p.repair;
 
 	while (p.repair < 1 || p.repair > 2) {
+		std::cout << "Please enter 1(yes) or 2(no): ";
 		std::cin >> p.repair;
-		std::cout << "Please enter 1(yes) or 2(no)";
+		continue;
 	}
+	return p;
 }
 
-void StationEdit(station s) {
-	std::cout << "Enter the number of workshops in operation : ";
+station StationEdit(station& s) {
+	std::cout << "Enter the number of workshops in operation: ";
 	std::cin >> s.WorkshopsInOperation;
 
 	while (s.WorkshopsInOperation < 0) {
+		std::cout << "The value must be >= 0. Try again: ";
 		std::cin >> s.WorkshopsInOperation;
-		std::cout << "The value must be >= 0";
 		continue;
 	}
 
 	while (s.WorkshopsInOperation > s.workshops) {
+		std::cout << "Number of working workshops can't be > number of workshops. Try again: ";
 		std::cin >> s.WorkshopsInOperation;
-		std::cout << "Number of working workshops can't be > number of workshops";
 		continue;
 	}
+	return s;
+
 }
 
 void Output(pipe p, station s) {
@@ -126,8 +145,9 @@ void Output(pipe p, station s) {
 	if (p.length > 0 && p.diametr > 0) {
 		cout << "\n1. Pipe p";
 		cout << "\nId: " << p.id;
-		cout << "\nDiameter: " << p.diametr;
-		cout << "\nLength: " << p.length << "\n";
+		cout << "\nDiametr: " << p.diametr;
+		cout << "\nLength: " << p.length;
+		cout << "\nRepair ('yes' - 1, 'no' - 2)" << p.repair << "\n";
 	}
 
 	if (s.name != "") {
@@ -139,7 +159,6 @@ void Output(pipe p, station s) {
 		cout << "\nEfficiency: " << s.efficiency << "\n";
 	}
 }
-
 void Save(pipe p, station s) {
 	ofstream file;
 	file.open("database.txt");
@@ -147,8 +166,9 @@ void Save(pipe p, station s) {
 		if (p.length > 0 && p.diametr > 0) {
 			file << "\n1. Pipe p";
 			file << "\nId: " << p.id;
-			file << "\nDiameter: " << p.diametr;
-			file << "\nLength: " << p.length << "\n";
+			file << "\nDiametr: " << p.diametr;
+			file << "\nLength: " << p.length;
+			file << "\nRepair ('yes' - 1, 'no' - 2)" << p.repair << "\n";
 		}
 
 		if (s.name != "") {
@@ -164,7 +184,7 @@ void Save(pipe p, station s) {
 	}
 }
 
-void Load(pipe p, station s) {
+void Load(pipe& p, station& s) {
 	ifstream file;
 	file.open("database.txt");
 	if (file.good()) {
@@ -175,6 +195,7 @@ void Load(pipe p, station s) {
 				file >> p.id;
 				file >> p.diametr;
 				file >> p.length;
+				file >> p.repair;
 			}
 			if (type == "Station:") {
 				file >> s.id;
@@ -188,56 +209,48 @@ void Load(pipe p, station s) {
 	cout << "Loaded\n";
 }
 
-int menu()
+int main()
 {
-	int variant;
-	std::cout << "Menu\n" << endl;
-	std::cout << "1. Add Pipe\n"
-		<< "2. Add Station\n"
-		<< "3. Viewing all objects\n"
-		<< "4. Edit Pipe\n"
-		<< "5. Edit Station\n"
-		<< "6. Save\n"
-		<< "7. Load\n"
-		<< "0. Exit\n";
-	std::cin >> variant;
-	return variant;
-}
-
-int main(int argc, char* argv[], pipe p, station s)
-{
-	int variant = menu();
-	while (1) {
-		switch (variant) {
-		case 0:
-			return 0;
+	pipe p;
+	p.length = -1;
+	station s;
+	s.name = "";
+	int a;
+	bool While = true;
+	while (While) {
+		menu();
+		cin >> a;
+		switch (a) {
 		case 1:
 			p = AddPipe();
-			break;
+			continue;
 		case 2:
 			s = AddStation();
-			break;
+			continue;
 		case 3:
 			Output(p, s);
-			break;
+			continue;
 		case 4:
 			PipeEdit(p);
-			break;
+			continue;
 		case 5:
 			StationEdit(s);
-			break;
+			continue;
 		case 6:
 			Save(p, s);
-			break;
+			continue;
 		case 7:
 			Load(p, s);
+			continue;
+		case 0:
+			While = false;
 			break;
 		default:
-			break;
+			cout << "Error\n\n";
+			continue;
 		}
 		return 0;
 	}
-
 }
 
 
