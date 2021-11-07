@@ -5,7 +5,6 @@
 #include <istream>
 #include <string>
 #include <vector>
-#include <map>
 
 using namespace std;
 
@@ -37,6 +36,28 @@ int rightValue() {
 	}
 }
 
+bool checkId(int& Id, vector<pipe>& pipes) {
+	for (int i = 0; i < pipes.size(); ++i)
+	{
+		if (Id == pipes[i].id)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+bool checkId(int& Id, vector<station>& stations) {
+	for (int i = 0; i < stations.size(); ++i)
+	{
+		if (Id == stations[i].id)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
 struct pipe {
 	int id;
 	int diametr;
@@ -65,7 +86,7 @@ struct pipe {
 }
 
 
-pipe AddPipe(vector<pipe>& pipesVector) {
+/* pipe AddPipe() {
 
 	pipe p;
 	p.id = 1;
@@ -97,6 +118,50 @@ pipe AddPipe(vector<pipe>& pipesVector) {
 	}
 	std::cout << "\nPipe was added.\n";
 	return p;
+} */
+
+
+pipe AddPipes(vector<pipe>& pipes) {
+	pipe p;
+	std::cout << "Pipe: " << pipes.size() + 1 << "\n";
+	int pipesId;
+		while (true) {
+			pipesId = rand();
+			if (checkId(pipesId, pipes)) {
+				p.id = pipesId;
+				break;
+			}
+			
+		}
+		std::cout << "Enter the diametr: ";
+		p.diametr = rightValue();
+
+		while (p.diametr <= 0) {
+			std::cout << "The value must be > 0. Try again: ";
+			p.diametr = rightValue();
+			continue;
+		}
+
+		std::cout << "Enter the length: ";
+		p.length = rightValue();
+
+		while (p.length <= 0) {
+			std::cout << "The value must be > 0. Try again: ";
+			p.length = rightValue();
+			continue;
+		}
+
+		std::cout << "Is the pipe under repair? ('yes'- 1 or 'no'- 2):  ";
+		p.repair = rightValue();
+
+		while (p.repair < 1 || p.repair > 2) {
+			std::cout << "Please enter 1(yes) or 2(no): ";
+			p.repair = rightValue();
+			continue;
+		}
+		std::cout << "\nPipe was added.\n";
+
+		pipes.push_back(p);
 }
 
 struct station {
@@ -135,7 +200,7 @@ station StationEdit(station& s) {
 		return s;
 }
 
-; station AddStation() {
+/*; station AddStation() {
 	station s;
 	s.id = 1;
 	std::cout << "Enter the name: ";
@@ -175,55 +240,105 @@ station StationEdit(station& s) {
 	}
 	cout << "\nStation was added.\n";
 	return s;
+} */
+
+station AddStations(vector<station>& stations) {
+	station s;
+	std::cout << "Station: " << stations.size() + 1 << "\n";
+	int stationsId;
+	while (true) {
+		stationsId = rand();
+		if (checkId(stationsId, stations)) {
+			s.id = stationsId;
+			break;
+		}
+	}
+	std::cout << "Enter the name: ";
+	cin.ignore(32767, '\n');
+	getline(cin, s.name);
+	std::cout << "Enter the number of workshops: ";
+	s.workshops = rightValue();
+
+	while (s.workshops < 0) {
+		std::cout << "The value must be > 0. Try again: ";
+		s.workshops = rightValue();
+		continue;
+	}
+
+	std::cout << "Enter the number of workshops in operation: ";
+	s.WorkshopsInOperation = rightValue();
+
+	while (s.WorkshopsInOperation < 0) {
+		std::cout << "The value must be >= 0. Try again: ";
+		s.WorkshopsInOperation = rightValue();
+		continue;
+	}
+
+	while (s.WorkshopsInOperation > s.workshops) {
+		std::cout << "Number of working workshops can't be > number of workshops. Try again: ";
+		s.WorkshopsInOperation = rightValue();
+		continue;
+	}
+
+	std::cout << "Enter the efficiency (%): ";
+	s.efficiency = rightValue();
+
+	while (s.efficiency < 0 || s.efficiency > 100) {
+		std::cout << "The value must be >= 0 and <= 100. Try again: ";
+		s.efficiency = rightValue();
+		continue;
+	}
+	cout << "\nStation was added.\n";
+
+	stations.push_back(s);
 }
 
-
-void Output(pipe p, station s) {
+void Output(vector<pipe>& pipes, vector<station>& stations) {
 	cout << "\nAll objects:\n";
-	if (p.length > 0 && p.diametr > 0) {
-		cout << "\n1. Pipe p";
-		cout << "\nId: " << p.id;
-		cout << "\nDiametr: " << p.diametr;
-		cout << "\nLength: " << p.length;
-		cout << "\nRepair ('yes' - 1, 'no' - 2): " << p.repair << "\n";
+	cout << "\nPipes: \n";
+	for (int i = 1; i < pipes.size() + 1; ++i) {
+		cout << "\nId: " << pipes[i - 1].id;
+		cout << "\nDiametr: " << pipes[i - 1].diametr;
+		cout << "\nLength: " << pipes[i - 1].length;
+		cout << "\nRepair ('yes' - 1, 'no' - 2): " << pipes[i - 1].repair << "\n";
 	}
 
-	if (s.name != "") {
-		cout << "\n2. Station s";
-		cout << "\nId: " << s.id;
-		cout << "\nName: " << s.name;
-		cout << "\nWorkshops: " << s.workshops;
-		cout << "\nWorkshops In Operation: " << s.WorkshopsInOperation;
-		cout << "\nEfficiency: " << s.efficiency << "\n";
+	cout << "\nStations: \n";
+	for (int i = 1; i < stations.size() + 1; ++i) {
+		cout << "\nId: " << stations[i - 1].id;
+		cout << "\nName: " << stations[i - 1].name;
+		cout << "\nWorkshops: " << stations[i - 1].workshops;
+		cout << "\nWorkshops In Operation: " << stations[i - 1].WorkshopsInOperation;
+		cout << "\nEfficiency: " << stations[i - 1].efficiency << "\n";
 	}
 }
 
-void Save(pipe p, station s) {
+void Save(vector<pipe>& pipes, vector<station>& stations) {
 	ofstream file;
 	file.open("database.txt");
 	if (file.good()) {
-		if (p.length > 0 && p.diametr > 0) {
-			file << "\n1. Pipe p";
-			file << "\nId: " << p.id;
-			file << "\nDiametr: " << p.diametr;
-			file << "\nLength: " << p.length;
-			file << "\nRepair ('yes' - 1, 'no' - 2): " << p.repair << "\n";
+		for (int i = 1; i < pipes.size() + 1; ++i) {
+			file << "\nPipes: \n";
+			file << "\nId: " << pipes[i - 1].id;
+			file << "\nDiametr: " << pipes[i - 1].diametr;
+			file << "\nLength: " << pipes[i - 1].length;
+			file << "\nRepair ('yes' - 1, 'no' - 2): " << pipes[i - 1].repair << "\n";
 		}
 
-		if (s.name != "") {
-			file << "\n2. Station s";
-			file << "\nId: " << s.id;
-			file << "\nName: " << s.name;
-			file << "\nWorkshops: " << s.workshops;
-			file << "\nWorkshops In Operation: " << s.WorkshopsInOperation;
-			file << "\nEfficiency: " << s.efficiency << "\n";
+		for (int i = 1; i < stations.size() + 1; ++i) {
+			file << "\nStations: \n";
+			file << "\nId: " << stations[i - 1].id;
+			file << "\nName: " << stations[i - 1].name;
+			file << "\nWorkshops: " << stations[i - 1].workshops;
+			file << "\nWorkshops In Operation: " << stations[i - 1].WorkshopsInOperation;
+			file << "\nEfficiency: " << stations[i - 1].efficiency << "\n";
 		}
 		file.close();
 		cout << "Saved\n";
 	}
 }
 
-int Load(pipe& p, station& s) {
+int Load(vector<pipe>& pipes, vector<station>& stations) {
 	ifstream inf("database.txt");
 	if (!inf) {
 		cerr << "database.txt couldn't be opened" << endl;
@@ -240,10 +355,13 @@ int Load(pipe& p, station& s) {
 
 int main()
 {
-	pipe p;
-	p.length = -1;
-	station s;
-	s.name = "";
+	vector <pipe> pipes;
+	pipes.resize(0);
+	vector <station> stations;
+	stations.resize(0); 
+	int i;
+	pipe p{};
+	station s{};
 	int a;
 	bool While = true;
 	while (While) {
@@ -251,13 +369,13 @@ int main()
 		cin >> a;
 		switch (a) {
 		case 1:
-			// p = AddPipe();
+			AddPipes(pipes);
 			continue;
 		case 2:
-			s = AddStation();
+			AddStations(stations);
 			continue;
 		case 3:
-			Output(p, s);
+			Output(pipes, stations);
 			continue;
 		case 4:
 			PipeEdit(p);
@@ -266,10 +384,10 @@ int main()
 			StationEdit(s);
 			continue;
 		case 6:
-			Save(p, s);
+			Save(pipes, stations);
 			continue;
 		case 7:
-			Load(p, s);
+			Load(pipes, stations);
 			continue;
 		case 0:
 			While = false;
