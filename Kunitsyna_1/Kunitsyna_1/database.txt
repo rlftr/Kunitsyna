@@ -1,7 +1,0 @@
-
-2. Station s
-Id: 1
-Name: 76
-Workshops: 65
-Workshops In Operation: 56
-Efficiency: 6
