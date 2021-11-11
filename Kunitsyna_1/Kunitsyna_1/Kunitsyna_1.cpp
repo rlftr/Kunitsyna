@@ -164,6 +164,10 @@ void StationEdit(station& s) {
 			std::cout << "The value must be <= number of workshops. Maybe you didn't add station.\n";
 			std::cout << "Please enter 1(menu) or 2(try again): \n";
 			e = rightValue();
+			while (e < 1 || e > 2) {
+				cout << "Please enter 1(menu) or 2(try again): \n";
+				e = rightValue();
+			}
 			if (e == 1) {
 				break;
 			}
@@ -316,36 +320,48 @@ void SearchPipe(vector<pipe>& pipes) {
 			cout << "Please enter 1(name) or 2(repair): ";
 			continue;
 		}
-
-		switch (choose) {
-		case 1: 
-			cout << "Enter the name of pipe: ";
-			cin.ignore(32767, '\n');
-			getline(cin, pipesName);
-			for (int i = 1; i < pipes.size() + 1; i++) {
-				if (pipes[i - i].name == pipesName) {
-					cin >> pipes[i - i].id;
-					cin >> pipes[i - i].name;
-					cin >> pipes[i - i].diametr;
-					cin >> pipes[i - i].length;
-					cin >> pipes[i - i].repair;
+		bool While = true;
+		while (While) {
+			switch (choose) {
+			case 1: {
+				cout << "\nEnter the name of pipe: ";
+				cin.ignore(32767, '\n');
+				getline(cin, pipesName);
+				for (int i = 1; i < pipes.size() + 1; i++) {
+					if (pipes[i - i].name == pipesName) {
+						cout << "\nId: " << pipes[i - i].id;
+						cout << "\nName: " << pipes[i - i].name;
+						cout << "\nDiametr: " << pipes[i - i].diametr;
+						cout << "\nLength: " << pipes[i - i].length;
+						cout << "\nRepair: " << pipes[i - i].repair;
+						break;
+					}
 				}
+				break;
 			}
-		case 2: 
-			cout << "Is pipe under repair? (1 - yes, 2 - no): ";
-			pipesRepair = rightValue();
-			while (pipesRepair < 1 || pipesRepair > 2) {
-				cout << "Please enter 1 - yes or 2 - no: ";
+			case 2: {
+				cout << "\nIs pipe under repair? (1 - yes, 2 - no): ";
+				pipesRepair = rightValue();
+				while (pipesRepair < 1 || pipesRepair > 2) {
+					cout << "\nPlease enter 1 - yes or 2 - no: ";
+					continue;
+				}
+				for (int i = 1; i < pipes.size() + 1; i++) {
+					if (pipes[i - i].repair == pipesRepair) {
+						cout << "\nId: " << pipes[i - i].id;
+						cout << "\nName: " << pipes[i - i].name;
+						cout << "\nDiametr: " << pipes[i - i].diametr;
+						cout << "\nLength: " << pipes[i - i].length;
+						cout << "\nRepair: " << pipes[i - i].repair;
+						break;
+					}
+				}
+				break;
+			}
+			default: {
+				cout << "Error\n\n";
 				continue;
 			}
-			for (int i = 1; i < pipes.size() + 1; i++) {
-				if (pipes[i - i].repair == pipesRepair) {
-					cin >> pipes[i - i].id;
-					cin >> pipes[i - i].name;
-					cin >> pipes[i - i].diametr;
-					cin >> pipes[i - i].length;
-					cin >> pipes[i - i].repair;
-				}
 			}
 		}
 	}
@@ -363,41 +379,106 @@ void SearchStation(vector<station>& stations) {
 		cout << "1 - Name, 2 - Percent of not working workshops: ";
 		choose = rightValue();
 		while (choose < 1 || choose > 2) {
-			cout << "Please enter 1(name) or 2(percent of not working percent): ";
+			cout << "\nPlease enter 1(name) or 2(percent of not working percent): ";
 			continue;
 		}
-
-		switch (choose) {
-		case 1:
-			cout << "Enter the name of station: ";
-			cin.ignore(32767, '\n');
-			getline(cin, stationsName);
-			for (int i = 1; i < stations.size() + 1; i++) {
-				if (stations[i - i].name == stationsName) {
-					cin >> stations[i - i].id;
-					cin >> stations[i - i].name;
-					cin >> stations[i - i].workshops;
-					cin >> stations[i - i].WorkshopsInOperation;
-					cin >> stations[i - i].percentWNIO;
-					cin >> stations[i - i].efficiency;
+		bool While = true;
+		while (While) {
+			switch (choose) {
+			case 1:
+				cout << "\nEnter the name of station: ";
+				cin.ignore(32767, '\n');
+				getline(cin, stationsName);
+				for (int i = 1; i < stations.size() + 1; i++) {
+					if (stations[i - i].name == stationsName) {
+						cout << "\nId: " << stations[i - i].id;
+						cout << "\nName: " << stations[i - i].name;
+						cout << "\nNumber of workshops: " << stations[i - i].workshops;
+						cout << "\nNumber of workshops in operation: " << stations[i - i].WorkshopsInOperation;
+						cout << "\nPercent of not working workshops: " << stations[i - i].percentWNIO;
+						cout << "\nEfficiency: " << stations[i - i].efficiency;
+						break;
+					}
 				}
-			}
-		case 2:
-			cout << "Enter the percent of not working workshops: ";
-			percent = rightValue();
-			while (percent < 0 || percent > 100) {
-				cout << "The value must be >=0 and <=100. Try again: ";
+			case 2:
+				cout << "\nEnter the percent of not working workshops: ";
+				percent = rightValue();
+				while (percent < 0 || percent > 100) {
+					cout << "\nThe value must be >=0 and <=100. Try again: ";
+					continue;
+				}
+				for (int i = 1; i < stations.size() + 1; i++) {
+					if (stations[i - i].percentWNIO == percent) {
+						cout << "\nId: " << stations[i - i].id;
+						cout << "\nName: " << stations[i - i].name;
+						cout << "\nNumber of workshops: " << stations[i - i].workshops;
+						cout << "\nNumber of workshops in operation: " << stations[i - i].WorkshopsInOperation;
+						cout << "\nPercent of not working workshops: " << stations[i - i].percentWNIO;
+						cout << "\nEfficiency: " << stations[i - i].efficiency;
+						break;
+					}
+				}
+			default: 
+				cout << "Error\n\n";
 				continue;
 			}
-			for (int i = 1; i < stations.size() + 1; i++) {
-				if (stations[i - i].percentWNIO == percent) {
-					cin >> stations[i - i].id;
-					cin >> stations[i - i].name;
-					cin >> stations[i - i].workshops;
-					cin >> stations[i - i].WorkshopsInOperation;
-					cin >> stations[i - i].percentWNIO;
-					cin >> stations[i - i].efficiency;
-				}
+		}
+	}
+	else {
+		cout << "Stations wasn't added.";
+	}
+}
+
+void EditPipes(vector<pipe>& pipes) {
+	if (pipes.size() != 0) {
+		int choose;
+		cout << "What whould you do?\n";
+		cout << "1 - edit all pipes, 2 - edit several pipes: ";
+		choose = rightValue();
+		while (choose < 1 || choose > 2) {
+			cout << "\nPlease enter 1(edit all pipes) or 2(edit several pipes): ";
+			choose = rightValue();
+		}
+
+		bool While = true;
+		while (While) {
+			switch (choose) {
+			case 1:
+				
+			case 2:
+				
+			default:
+				cout << "Error\n\n";
+				continue;
+			}
+		}
+	}
+	else {
+		cout << "Pipes wasn't added.";
+	}
+}
+
+void EditStations(vector<station>& stations) {
+	if (stations.size() != 0) {
+		int choose;
+		cout << "What whould you do?\n";
+		cout << "1 - edit all stations, 2 - edit several stations: ";
+		choose = rightValue();
+		while (choose < 1 || choose > 2) {
+			cout << "\nPlease enter 1(edit all stations) or 2(edit several stations): ";
+			choose = rightValue();
+		}
+
+		bool While = true;
+		while (While) {
+			switch (choose) {
+			case 1:
+
+			case 2:
+
+			default:
+				cout << "Error\n\n";
+				continue;
 			}
 		}
 	}
