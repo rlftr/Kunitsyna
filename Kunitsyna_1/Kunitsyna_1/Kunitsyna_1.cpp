@@ -93,7 +93,7 @@ void AddPipes(vector<pipe>& pipes) {
 			}
 
 		}
-		std::cout << "Pipe id: " << p.id << "\n";
+		std::cout << "Pipe's id: " << p.id << "\n";
 
 		cout << "Enter the name: ";
 		cin.ignore(32767, '\n');
@@ -135,7 +135,7 @@ struct station {
 	int workshops;
 	int WorkshopsInOperation;
 	int efficiency;
-	int percentWNIO;
+	int NotWorkingWorkshops;
 };
 
 bool checkId(int& Id, vector<station>& stations) {
@@ -160,22 +160,27 @@ void StationEdit(station& s) {
 		}
 		
 		while (s.WorkshopsInOperation > s.workshops) {
-			int e;
+			int enter;
 			std::cout << "The value must be <= number of workshops. Maybe you didn't add station.\n";
 			std::cout << "Please enter 1(menu) or 2(try again): \n";
-			e = rightValue();
-			while (e < 1 || e > 2) {
+			enter = rightValue();
+			while (enter < 1 || enter > 2) {
 				cout << "Please enter 1(menu) or 2(try again): \n";
-				e = rightValue();
+				enter = rightValue();
 			}
-			if (e == 1) {
+			if (enter == 1) {
 				break;
 			}
-			if (e == 2) {
+			if (enter == 2) {
 				std::cout << "Enter the number of workshops in operation: ";
 				s.WorkshopsInOperation = rightValue();
 				continue;
 			}
+			while (enter < 1 || enter > 2) {
+				cout << "Please enter 1(menu) or 2(try again): ";
+				enter = rightValue();
+			}
+
 		}
 		cout << "\nStation was edited.\n";
 }
@@ -221,42 +226,57 @@ void AddStations(vector<station>& stations) {
 	std::cout << "Enter the efficiency (%): ";
 	s.efficiency = rightValue();
 
-	std::cout << "Percent of not working workshops: ";
-	s.percentWNIO = ((s.workshops - s.WorkshopsInOperation) / s.workshops) * 100;
-	std::cout << s.percentWNIO << endl;
-
 	while (s.efficiency < 0 || s.efficiency > 100) {
-		std::cout << "The value must be >= 0 and <= 100. Try again: ";
+		cout << "The value must be >= 0 and <= 100. Try again: ";
 		s.efficiency = rightValue();
 		continue;
 	}
+
+	if ((s.workshops != 0) && (s.WorkshopsInOperation >= 0)) {
+		s.NotWorkingWorkshops = s.workshops - s.WorkshopsInOperation;
+		cout << "Number of not working workshops: ";
+		cout << s.NotWorkingWorkshops;
+	}
+
 
 	cout << "\nStation was added.\n";
 	stations.push_back(s);
 }
 
+string* StringArray(int lines)
+{
+	string* array = new string[lines];
+	return array;
+}
+
+int* IntArray(int lines)
+{
+	int* array = new int[lines];
+	return array;
+}
+
 void Output(vector<pipe>& pipes, vector<station>& stations) {
 	cout << "\nAll objects:\n";
 	cout << "\nPipes: \n";
-	for (int i = 1; i < pipes.size() + 1; ++i) {
+	for (vector<pipe>::size_type i = 0; i <= pipes.size(); ++i) {
 		if (pipes.size() != 0) {
-			cout << "\nId: " << pipes[i - i].id;
-			cout << "\nName: " << pipes[i - i].name;
-			cout << "\nDiametr: " << pipes[i - i].diametr;
-			cout << "\nLength: " << pipes[i - i].length;
-			cout << "\nRepair ('yes' - 1, 'no' - 2): " << pipes[i - i].repair << "\n";
+			cout << "\nId: " << pipes[i].id;
+			cout << "\nName: " << pipes[i].name;
+			cout << "\nDiametr: " << pipes[i].diametr;
+			cout << "\nLength: " << pipes[i].length;
+			cout << "\nRepair ('yes' - 1, 'no' - 2): " << pipes[i].repair << "\n";
 			continue;
 		}
 	}
 	cout << "\nStations: \n";
-	for (int i = 1; i < stations.size() + 1; ++i) {
+	for (vector<station>::size_type i = 0; i <= stations.size(); ++i) {
 		if (stations.size() != 0) {
-			cout << "\nId: " << stations[i - i].id;
-			cout << "\nName: " << stations[i - i].name;
-			cout << "\nWorkshops: " << stations[i - i].workshops;
-			cout << "\nWorkshops In Operation: " << stations[i - i].WorkshopsInOperation;
-			cout << "\nPercent of not working workshops: " << stations[i - i].percentWNIO;
-			cout << "\nEfficiency: " << stations[i - i].efficiency << "\n";
+			cout << "\nId: " << stations[i].id;
+			cout << "\nName: " << stations[i].name;
+			cout << "\nWorkshops: " << stations[i].workshops;
+			cout << "\nWorkshops In Operation: " << stations[i].WorkshopsInOperation;
+			cout << "\nNumber of not working workshops: " << stations[i].NotWorkingWorkshops;
+			cout << "\nEfficiency: " << stations[i].efficiency << "\n";
 			continue;
 		}
 	}
@@ -266,26 +286,26 @@ void Save(vector<pipe>& pipes, vector<station>& stations) {
 	ofstream file;
 	file.open("database.txt");
 	if (file.good()) {
-		for (int i = 1; i < pipes.size() + 1; i++) {
+		for (vector<pipe>::size_type i = 0; i <= pipes.size(); i++) {
 		    if (pipes.size() != 0) {
 				file << "\nPipes: \n";
-				file << "\nId: " << pipes[i - i].id;
-				file << "\nName: " << pipes[i - i].name;
-				file << "\nDiametr: " << pipes[i - i].diametr;
-				file << "\nLength: " << pipes[i - i].length;
-				file << "\nRepair ('yes' - 1, 'no' - 2): " << pipes[i - i].repair << "\n";
+				file << "\nId: " << pipes[i].id;
+				file << "\nName: " << pipes[i].name;
+				file << "\nDiametr: " << pipes[i].diametr;
+				file << "\nLength: " << pipes[i].length;
+				file << "\nRepair ('yes' - 1, 'no' - 2): " << pipes[i].repair << "\n";
 			}
 		}
 
-		for (int i = 1; i < stations.size() + 1; i++) {
+		for (vector<station>::size_type i = 0; i <= stations.size(); i++) {
 		    if (stations.size() != 0) {
 				file << "\nStations: \n";
-				file << "\nId: " << stations[i - i].id;
-				file << "\nName: " << stations[i - i].name;
-				file << "\nWorkshops: " << stations[i - i].workshops;
-				file << "\nWorkshops In Operation: " << stations[i - i].WorkshopsInOperation;
-				file << "\nPercent of not working workshops: " << stations[i - i].percentWNIO;
-				file << "\nEfficiency: " << stations[i - i].efficiency << "\n";
+				file << "\nId: " << stations[i].id;
+				file << "\nName: " << stations[i].name;
+				file << "\nWorkshops: " << stations[i].workshops;
+				file << "\nWorkshops In Operation: " << stations[i].WorkshopsInOperation;
+				file << "\nNumber of not working workshops: " << stations[i].NotWorkingWorkshops;
+				file << "\nEfficiency: " << stations[i].efficiency << "\n";
 			}
 		}
 		file.close();
@@ -310,53 +330,55 @@ int Load(vector<pipe>& pipes, vector<station>& stations) {
 
 void SearchPipe(vector<pipe>& pipes) {
 	if (pipes.size() != 0) {
-		int choose;
-		string pipesName;
-		int pipesRepair;
+		vector<pipe>::size_type i = 0;
+		int input;
+		string* pipesName = StringArray(pipes.size());
+		int* pipesRepair = IntArray(pipes.size());
 		cout << "Choose the filter:\n";
 		cout << "1 - Name, 2 - Repair: ";
-		choose = rightValue();
-		while (choose < 1 || choose > 2) {
+		input = rightValue();
+		while (input < 1 || input > 2) {
 			cout << "Please enter 1(name) or 2(repair): ";
 			continue;
 		}
 		bool While = true;
 		while (While) {
-			switch (choose) {
+			switch (input) {
 			case 1: {
+				for (vector<pipe>::size_type i = 0; i <= pipes.size(); i++) {
 				cout << "\nEnter the name of pipe: ";
 				cin.ignore(32767, '\n');
-				getline(cin, pipesName);
-				for (int i = 1; i < pipes.size() + 1; i++) {
-					if (pipes[i - i].name == pipesName) {
-						cout << "\nId: " << pipes[i - i].id;
-						cout << "\nName: " << pipes[i - i].name;
-						cout << "\nDiametr: " << pipes[i - i].diametr;
-						cout << "\nLength: " << pipes[i - i].length;
-						cout << "\nRepair: " << pipes[i - i].repair;
+				cin >> pipesName[i];
+				
+					while (pipes[i].name == pipesName[i]) {
+						cout << "\nId: " << pipes[i].id;
+						cout << "\nName: " << pipes[i].name;
+						cout << "\nDiametr: " << pipes[i].diametr;
+						cout << "\nLength: " << pipes[i].length;
+						cout << "\nRepair: " << pipes[i].repair;
 						break;
 					}
 				}
-				break;
+				continue;
 			}
 			case 2: {
+				for (vector<pipe>::size_type i = 0; i <= pipes.size(); i++) {
 				cout << "\nIs pipe under repair? (1 - yes, 2 - no): ";
-				pipesRepair = rightValue();
-				while (pipesRepair < 1 || pipesRepair > 2) {
+				pipesRepair[i] = rightValue();
+				while (pipesRepair[i] < 1 || pipesRepair[i] > 2) {
 					cout << "\nPlease enter 1 - yes or 2 - no: ";
 					continue;
 				}
-				for (int i = 1; i < pipes.size() + 1; i++) {
-					if (pipes[i - i].repair == pipesRepair) {
-						cout << "\nId: " << pipes[i - i].id;
-						cout << "\nName: " << pipes[i - i].name;
-						cout << "\nDiametr: " << pipes[i - i].diametr;
-						cout << "\nLength: " << pipes[i - i].length;
-						cout << "\nRepair: " << pipes[i - i].repair;
+					while (pipes[i].repair == pipesRepair[i]) {
+						cout << "\nId: " << pipes[i].id;
+						cout << "\nName: " << pipes[i].name;
+						cout << "\nDiametr: " << pipes[i].diametr;
+						cout << "\nLength: " << pipes[i].length;
+						cout << "\nRepair: " << pipes[i].repair;
 						break;
 					}
 				}
-				break;
+				continue;
 			}
 			default: {
 				cout << "Error\n\n";
@@ -366,55 +388,52 @@ void SearchPipe(vector<pipe>& pipes) {
 		}
 	}
 	else {
-		cout << "Pipes wasn't added.";
+		cout << "\nPipes wasn't added.";
 	}
 }
 
 void SearchStation(vector<station>& stations) {
 	if (stations.size() != 0) {
-		int choose;
-		string stationsName;
-		int percent;
+		vector<station>::size_type i = 0;
+		int input;
+		string* stationsName = StringArray(stations.size());
+		int* stationsNotWorkingWorkshops = IntArray(stations.size());
 		cout << "Choose the filter:\n";
-		cout << "1 - Name, 2 - Percent of not working workshops: ";
-		choose = rightValue();
-		while (choose < 1 || choose > 2) {
-			cout << "\nPlease enter 1(name) or 2(percent of not working percent): ";
+		cout << "1 - Name, 2 - Number of not working workshops: ";
+		input = rightValue();
+		while (input < 1 || input > 2) {
+			cout << "\nPlease enter 1(name) or 2(number of not working percent): ";
 			continue;
 		}
 		bool While = true;
 		while (While) {
-			switch (choose) {
+			switch (input) {
 			case 1:
+				for (vector<station>::size_type i = 0; i <= stations.size(); i++) {
 				cout << "\nEnter the name of station: ";
 				cin.ignore(32767, '\n');
-				getline(cin, stationsName);
-				for (int i = 1; i < stations.size() + 1; i++) {
-					if (stations[i - i].name == stationsName) {
-						cout << "\nId: " << stations[i - i].id;
-						cout << "\nName: " << stations[i - i].name;
-						cout << "\nNumber of workshops: " << stations[i - i].workshops;
-						cout << "\nNumber of workshops in operation: " << stations[i - i].WorkshopsInOperation;
-						cout << "\nPercent of not working workshops: " << stations[i - i].percentWNIO;
-						cout << "\nEfficiency: " << stations[i - i].efficiency;
+				cin >> stationsName[i];
+					while (stations[i].name == stationsName[i]) {
+						cout << "\nId: " << stations[i].id;
+						cout << "\nName: " << stations[i].name;
+						cout << "\nNumber of workshops: " << stations[i].workshops;
+						cout << "\nNumber of workshops in operation: " << stations[i].WorkshopsInOperation;
+						cout << "\nNumber of not working workshops: " << stations[i].NotWorkingWorkshops;
+						cout << "\nEfficiency: " << stations[i].efficiency;
 						break;
 					}
 				}
 			case 2:
-				cout << "\nEnter the percent of not working workshops: ";
-				percent = rightValue();
-				while (percent < 0 || percent > 100) {
-					cout << "\nThe value must be >=0 and <=100. Try again: ";
-					continue;
-				}
-				for (int i = 1; i < stations.size() + 1; i++) {
-					if (stations[i - i].percentWNIO == percent) {
-						cout << "\nId: " << stations[i - i].id;
-						cout << "\nName: " << stations[i - i].name;
-						cout << "\nNumber of workshops: " << stations[i - i].workshops;
-						cout << "\nNumber of workshops in operation: " << stations[i - i].WorkshopsInOperation;
-						cout << "\nPercent of not working workshops: " << stations[i - i].percentWNIO;
-						cout << "\nEfficiency: " << stations[i - i].efficiency;
+				for (vector<station>::size_type i = 0; i <= stations.size(); i++) {
+				cout << "\nEnter the number of not working workshops: ";
+				stationsNotWorkingWorkshops[i] = rightValue();
+					while (stations[i].NotWorkingWorkshops == stationsNotWorkingWorkshops[i]) {
+						cout << "\nId: " << stations[i].id;
+						cout << "\nName: " << stations[i].name;
+						cout << "\nNumber of workshops: " << stations[i].workshops;
+						cout << "\nNumber of workshops in operation: " << stations[i].WorkshopsInOperation;
+						cout << "\nNumber of not working workshops: " << stations[i].NotWorkingWorkshops;
+						cout << "\nEfficiency: " << stations[i].efficiency;
 						break;
 					}
 				}
