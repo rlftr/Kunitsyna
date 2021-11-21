@@ -91,7 +91,6 @@ void AddPipes(vector<pipe>& pipes) {
 				p.id = pipesId;
 				break;
 			}
-
 		}
 		std::cout << "Pipe's id: " << p.id << "\n";
 
@@ -258,8 +257,8 @@ int* IntArray(int lines)
 void Output(vector<pipe>& pipes, vector<station>& stations) {
 	cout << "\nAll objects:\n";
 	cout << "\nPipes: \n";
-	for (vector<pipe>::size_type i = 0; i <= pipes.size(); ++i) {
-		if (pipes.size() != 0) {
+	if (pipes.size() != 0) {
+	    for (vector<pipe>::size_type i = 0; i < pipes.size(); i++) {
 			cout << "\nId: " << pipes[i].id;
 			cout << "\nName: " << pipes[i].name;
 			cout << "\nDiametr: " << pipes[i].diametr;
@@ -269,8 +268,8 @@ void Output(vector<pipe>& pipes, vector<station>& stations) {
 		}
 	}
 	cout << "\nStations: \n";
-	for (vector<station>::size_type i = 0; i <= stations.size(); ++i) {
-		if (stations.size() != 0) {
+	if (stations.size() != 0) {
+	    for (vector<station>::size_type i = 0; i < stations.size(); i++) {
 			cout << "\nId: " << stations[i].id;
 			cout << "\nName: " << stations[i].name;
 			cout << "\nWorkshops: " << stations[i].workshops;
@@ -284,9 +283,9 @@ void Output(vector<pipe>& pipes, vector<station>& stations) {
 
 void Save(vector<pipe>& pipes, vector<station>& stations) {
 	ofstream file;
-	file.open("database.txt");
+	file.open("data.txt");
 	if (file.good()) {
-		for (vector<pipe>::size_type i = 0; i <= pipes.size(); i++) {
+		for (vector<pipe>::size_type i = 0; i < pipes.size(); i++) {
 		    if (pipes.size() != 0) {
 				file << "\nPipes: \n";
 				file << "\nId: " << pipes[i].id;
@@ -297,7 +296,7 @@ void Save(vector<pipe>& pipes, vector<station>& stations) {
 			}
 		}
 
-		for (vector<station>::size_type i = 0; i <= stations.size(); i++) {
+		for (vector<station>::size_type i = 0; i < stations.size(); i++) {
 		    if (stations.size() != 0) {
 				file << "\nStations: \n";
 				file << "\nId: " << stations[i].id;
@@ -314,9 +313,9 @@ void Save(vector<pipe>& pipes, vector<station>& stations) {
 }
 
 int Load(vector<pipe>& pipes, vector<station>& stations) {
-	ifstream inf("database.txt");
+	ifstream inf("data.txt");
 	if (!inf) {
-		cerr << "database.txt couldn't be opened" << endl;
+		cerr << "data.txt couldn't be opened" << endl;
 		exit(1);
 	}
 
@@ -330,14 +329,13 @@ int Load(vector<pipe>& pipes, vector<station>& stations) {
 
 void SearchPipe(vector<pipe>& pipes) {
 	if (pipes.size() != 0) {
-		vector<pipe>::size_type i = 0;
 		int input;
 		string* pipesName = StringArray(pipes.size());
 		int* pipesRepair = IntArray(pipes.size());
 		cout << "Choose the filter:\n";
 		cout << "1 - Name, 2 - Repair: ";
 		input = rightValue();
-		while (input < 1 || input > 2) {
+		while ((input > 0 && input < 1) || input > 2) {
 			cout << "Please enter 1(name) or 2(repair): ";
 			continue;
 		}
@@ -345,7 +343,7 @@ void SearchPipe(vector<pipe>& pipes) {
 		while (While) {
 			switch (input) {
 			case 1: {
-				for (vector<pipe>::size_type i = 0; i <= pipes.size(); i++) {
+				for (vector<pipe>::size_type i = 0; i < pipes.size(); i++) {
 				cout << "\nEnter the name of pipe: ";
 				cin.ignore(32767, '\n');
 				cin >> pipesName[i];
@@ -358,11 +356,12 @@ void SearchPipe(vector<pipe>& pipes) {
 						cout << "\nRepair: " << pipes[i].repair;
 						break;
 					}
+
 				}
 				continue;
 			}
 			case 2: {
-				for (vector<pipe>::size_type i = 0; i <= pipes.size(); i++) {
+				for (vector<pipe>::size_type i = 0; i < pipes.size(); i++) {
 				cout << "\nIs pipe under repair? (1 - yes, 2 - no): ";
 				pipesRepair[i] = rightValue();
 				while (pipesRepair[i] < 1 || pipesRepair[i] > 2) {
@@ -394,22 +393,21 @@ void SearchPipe(vector<pipe>& pipes) {
 
 void SearchStation(vector<station>& stations) {
 	if (stations.size() != 0) {
-		vector<station>::size_type i = 0;
 		int input;
 		string* stationsName = StringArray(stations.size());
 		int* stationsNotWorkingWorkshops = IntArray(stations.size());
-		cout << "Choose the filter:\n";
-		cout << "1 - Name, 2 - Number of not working workshops: ";
-		input = rightValue();
-		while (input < 1 || input > 2) {
-			cout << "\nPlease enter 1(name) or 2(number of not working percent): ";
-			continue;
-		}
 		bool While = true;
 		while (While) {
+			cout << "Choose the filter:\n";
+			cout << "1 - Name, 2 - Number of not working workshops: ";
+			input = rightValue();
+			while (input < 1 || input > 2) {
+				cout << "\nPlease enter 1(name) or 2(number of not working workshops): ";
+				continue;
+			}
 			switch (input) {
 			case 1:
-				for (vector<station>::size_type i = 0; i <= stations.size(); i++) {
+				for (vector<station>::size_type i = 0; i < stations.size(); i++) {
 				cout << "\nEnter the name of station: ";
 				cin.ignore(32767, '\n');
 				cin >> stationsName[i];
@@ -424,7 +422,7 @@ void SearchStation(vector<station>& stations) {
 					}
 				}
 			case 2:
-				for (vector<station>::size_type i = 0; i <= stations.size(); i++) {
+				for (vector<station>::size_type i = 0; i < stations.size(); i++) {
 				cout << "\nEnter the number of not working workshops: ";
 				stationsNotWorkingWorkshops[i] = rightValue();
 					while (stations[i].NotWorkingWorkshops == stationsNotWorkingWorkshops[i]) {

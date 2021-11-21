@@ -1,0 +1,8 @@
+
+Pipes: 
+
+Id: 182
+Name: p1
+Diametr: 212
+Length: 1212
+Repair ('yes' - 1, 'no' - 2): 1
