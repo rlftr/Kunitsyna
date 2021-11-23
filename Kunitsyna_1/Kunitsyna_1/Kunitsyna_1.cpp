@@ -327,68 +327,114 @@ int Load(vector<pipe>& pipes, vector<station>& stations) {
 }
 
 void SearchPipe(vector<pipe>& pipes) {
+	if (pipes.size() != 0) {
 		int input;
 		string* pipesName = StringArray(pipes.size());
 		int* pipesRepair = IntArray(pipes.size());
-		if (pipes.size() != 0) {
-			cout << "Choose the filter:\n";
-			cout << "1 - Name, 2 - Repair, 0 - Exit: ";
-			input = rightValue();
-			while ((input > 0 && input < 1) || (input > 2)) {
-				cout << "Please enter 1(name) or 2(repair) or 0(exit): ";
-				continue;
+		cout << "Choose the filter:\n";
+		cout << "1 - Name, 2 - Repair, 0 - Exit: ";
+		input = rightValue();
+		while ((input > 0 && input < 1) || (input > 2)) {
+			cout << "Please enter 1(name) or 2(repair) or 0(exit): ";
+			continue;
+		}
+		switch (input) {
+		case 1:
+			for (vector<pipe>::size_type i = 0; i < pipes.size(); i++) {
+				cout << "\nEnter the name of pipe: ";
+				cin.ignore(32767, '\n');
+				cin >> pipesName[i];
+
+				while (pipes[i].name == pipesName[i]) {
+					cout << "\nId: " << pipes[i].id;
+					cout << "\nName: " << pipes[i].name;
+					cout << "\nDiametr: " << pipes[i].diametr;
+					cout << "\nLength: " << pipes[i].length;
+					cout << "\nRepair: " << pipes[i].repair;
+					break;
+				}
+				if (pipes[i].name != pipesName[i]) {
+					cout << "No pipes with this name.\n";
+					break;
+				}
+
 			}
-			switch (input) {
-			case 1:
-				for (vector<pipe>::size_type i = 0; i < pipes.size(); i++) {
-					cout << "\nEnter the name of pipe: ";
-					cin.ignore(32767, '\n');
-					cin >> pipesName[i];
-
-					while (pipes[i].name == pipesName[i]) {
-						cout << "\nId: " << pipes[i].id;
-						cout << "\nName: " << pipes[i].name;
-						cout << "\nDiametr: " << pipes[i].diametr;
-						cout << "\nLength: " << pipes[i].length;
-						cout << "\nRepair: " << pipes[i].repair;
-						break;
-					}
-					if (pipes[i].name != pipesName[i]) {
-						cout << "No pipes with this name.\n";
-						break;
-					}
-
+			break;
+		case 2:
+			for (vector<pipe>::size_type i = 0; i < pipes.size(); i++) {
+				cout << "\nIs pipe under repair? (1 - yes, 2 - no): ";
+				pipesRepair[i] = rightValue();
+				while (pipesRepair[i] < 1 || pipesRepair[i] > 2) {
+					cout << "\nPlease enter 1 - yes or 2 - no: ";
+					continue;
 				}
-				break;
-			case 2:
-				for (vector<pipe>::size_type i = 0; i < pipes.size(); i++) {
-					cout << "\nIs pipe under repair? (1 - yes, 2 - no): ";
-					pipesRepair[i] = rightValue();
-					while (pipesRepair[i] < 1 || pipesRepair[i] > 2) {
-						cout << "\nPlease enter 1 - yes or 2 - no: ";
-						continue;
-					}
-					while (pipes[i].repair == pipesRepair[i]) {
-						cout << "\nId: " << pipes[i].id;
-						cout << "\nName: " << pipes[i].name;
-						cout << "\nDiametr: " << pipes[i].diametr;
-						cout << "\nLength: " << pipes[i].length;
-						cout << "\nRepair: " << pipes[i].repair;
-						break;
-					}
-					if (pipes[i].repair != pipesRepair[i]) {
-						cout << "No pipes with this under repair sign";
-						break;
-					}
+				while (pipes[i].repair == pipesRepair[i]) {
+					cout << "\nId: " << pipes[i].id;
+					cout << "\nName: " << pipes[i].name;
+					cout << "\nDiametr: " << pipes[i].diametr;
+					cout << "\nLength: " << pipes[i].length;
+					cout << "\nRepair: " << pipes[i].repair;
+					break;
 				}
-				break;
-			case 0:
+				if (pipes[i].repair != pipesRepair[i]) {
+					cout << "No pipes with this under repair sign";
+					break;
+				}
+			}
+			break;
+		case 0:
+			break;
+		}
+	}
+}
+
+void EditPipes(vector<pipe>& pipes) {
+	int input;
+	string* Name = StringArray(pipes.size());
+	int* Repair = IntArray(pipes.size());
+	cout << "What would you do?";
+	cout << "1 - Edit all pipes, 2 - Edit few pipes";
+	input = rightValue();
+	while (input > 2 || input < 1) {
+		cout << "Please enter 1(edit all pipes) or 2(edit few pipes)";
+		input = rightValue();
+	}
+	switch (input) {
+	case 1:
+		for (vector<pipe>::size_type i = 0; i < pipes.size(); i++) {
+			cout << "Please enter the under repair sign of pipe (1 - under repair, 2 - not under repair): ";
+			Repair[i] = rightValue();
+			while (Repair[i] < 1 || Repair[i] > 2) {
+				cout << "Please enter 1(under repair) or 2(not under repair)";
+			}
+			while (pipes[i].repair == Repair[i]) {
+				cout << "Is the pipe under repair? ('yes'- 1 or 'no'- 2): ";
+				pipes[i].repair = rightValue();
+
+				while (pipes[i].repair < 1 || pipes[i].repair > 2) {
+					cout << "Please enter 1(yes) or 2(no): ";
+					pipes[i].repair = rightValue();
+					continue;
+				}
+				cout << "\nPipes was edited.";
 				break;
 			}
 		}
-	else {
-		cout << "Pipes wasn't added.";
-	}
+	case 2:
+		for (vector<pipe>::size_type i = 0; i < pipes.size(); i++) {
+			cout << "Enter the name of pipe you would edit: ";
+			cin.ignore(32767, '\n');
+			cin >> Name[i];
+			while (pipes[i].name != Name[i]) {
+				cout << "No pipes with this name. Try again: ";
+				cin.ignore(32767, '\n');
+				cin >> Name[i];
+				break;
+			}
+			if (pipes[i].name == Name[i]) {
+
+			}
+		}
 }
 
 void SearchStation(vector<station>& stations) {
@@ -446,9 +492,6 @@ void SearchStation(vector<station>& stations) {
 		case 0:
 			break;
 		}
-	}
-	else {
-		cout << "Stations wasn't added.";
 	}
 }
 
