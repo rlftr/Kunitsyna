@@ -41,7 +41,7 @@ int rightValue() {
 }
 
 
-bool checkId(int& Id, vector<pipe>& pipes) {
+bool pipe::checkId(int& Id, vector<pipe>& pipes) {
 	for (int i = 0; i < pipes.size(); ++i)
 	{
 		if (Id == pipes[i].id)
@@ -57,7 +57,7 @@ int random(int r, int l) {
 	return l + (rand() % (r - l) + 1);
 }
 
-void AddPipes(vector<pipe>& pipes) {
+void pipe::AddPipes(vector<pipe>& pipes) {
 	pipe p;
 	int pipesId;
 		while (true) {
@@ -103,16 +103,8 @@ void AddPipes(vector<pipe>& pipes) {
 		pipes.push_back(p);
 }
 
-struct station {
-	int id;
-	string name;
-	int workshops;
-	int WorkshopsInOperation;
-	int efficiency;
-	int NotWorkingWorkshops;
-};
 
-bool checkId(int& Id, vector<station>& stations) {
+bool station::checkId(int& Id, vector<station>& stations) {
 	for (int i = 0; i < stations.size(); ++i)
 	{
 		if (Id == stations[i].id)
@@ -124,7 +116,7 @@ bool checkId(int& Id, vector<station>& stations) {
 }
 
 
-void AddStations(vector<station>& stations) {
+void station::AddStations(vector<station>& stations) {
 	station s;
 	int stationsId;
 	while (true) {
@@ -267,7 +259,7 @@ int Load(vector<pipe>& pipes, vector<station>& stations) {
 	return 0;
 }
 
-void SearchPipe(vector<pipe>& pipes) {
+void pipe::SearchPipe(vector<pipe>& pipes) {
 	int input;
 	string* pipesName = StringArray(pipes.size());
 	int* pipesRepair = IntArray(pipes.size());
@@ -338,7 +330,7 @@ void SearchPipe(vector<pipe>& pipes) {
 	}
 }
 
-void EditPipes(vector<pipe>& pipes) {
+void pipe::EditPipes(vector<pipe>& pipes) {
 	int input;
 	string* Name = StringArray(pipes.size());
 	int* Repair = IntArray(pipes.size());
@@ -399,7 +391,7 @@ void EditPipes(vector<pipe>& pipes) {
 	}
 }
 
-; void SearchStation(vector<station>& stations) {
+ void station::SearchStation(vector<station>& stations) {
 	int input;
 	string* stationsName = StringArray(stations.size());
 	int* stationsNotWorkingWorkshops = IntArray(stations.size());
@@ -463,7 +455,7 @@ void EditPipes(vector<pipe>& pipes) {
 	}
 }
 
-void EditStations(vector<station>& stations) {
+void station::EditStations(vector<station>& stations) {
 	int input;
 	int input1;
 	int input2;
