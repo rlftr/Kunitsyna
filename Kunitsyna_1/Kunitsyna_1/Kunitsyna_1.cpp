@@ -5,6 +5,8 @@
 #include <istream>
 #include <string>
 #include <vector>
+#include "Station.h"
+#include "Pipe.h"
 
 using namespace std;
 
@@ -14,8 +16,8 @@ void menu()
 	std::cout << "1. Add Pipe\n"
 		<< "2. Add Station\n"
 		<< "3. Viewing all objects\n"
-		<< "4. Edit Pipe\n"
-		<< "5. Edit Station\n"
+		<< "4. Edit Pipes\n"
+		<< "5. Edit Stations\n"
 		<< "6. Save\n"
 		<< "7. Load\n"
 		<< "8. Search Pipe\n"
@@ -38,13 +40,6 @@ int rightValue() {
 	}
 }
 
-struct pipe {
-	int id;
-	int diametr;
-	int length;
-	int repair;
-	string name;
-};
 
 bool checkId(int& Id, vector<pipe>& pipes) {
 	for (int i = 0; i < pipes.size(); ++i)
@@ -55,25 +50,6 @@ bool checkId(int& Id, vector<pipe>& pipes) {
 		}
 	}
 	return true;
-}
-
-
-void PipeEdit(pipe& p) {
-	 if (p.id < 0) {
-		 cout << "Pipe wasn't added. Please add pipe.\n";
-	 }
-	 else {
-		 std::cout << "Is the pipe under repair? ('yes'- 1 or 'no'- 2): ";
-		 p.repair = rightValue();
-
-		 while (p.repair < 1 || p.repair > 2) {
-			 std::cout << "Please enter 1(yes) or 2(no): ";
-			 p.repair = rightValue();
-			 continue;
-		 }
-		 cout << "\nPipe was edited.";
-		 
-	 }
 }
 
 int random(int r, int l) {
@@ -147,41 +123,6 @@ bool checkId(int& Id, vector<station>& stations) {
 	return true;
 }
 
-void StationEdit(station& s) {
-		std::cout << "Enter the number of workshops in operation: ";
-		s.WorkshopsInOperation = rightValue();
-
-		while (s.WorkshopsInOperation < 0) {
-			std::cout << "The value must be >= 0. Try again: ";
-			s.WorkshopsInOperation = rightValue();
-			continue;
-		}
-		
-		while (s.WorkshopsInOperation > s.workshops) {
-			int enter;
-			std::cout << "The value must be <= number of workshops. Maybe you didn't add station.\n";
-			std::cout << "Please enter 1(menu) or 2(try again): \n";
-			enter = rightValue();
-			while (enter < 1 || enter > 2) {
-				cout << "Please enter 1(menu) or 2(try again): \n";
-				enter = rightValue();
-			}
-			if (enter == 1) {
-				break;
-			}
-			if (enter == 2) {
-				std::cout << "Enter the number of workshops in operation: ";
-				s.WorkshopsInOperation = rightValue();
-				continue;
-			}
-			while (enter < 1 || enter > 2) {
-				cout << "Please enter 1(menu) or 2(try again): ";
-				enter = rightValue();
-			}
-
-		}
-		cout << "\nStation was edited.\n";
-}
 
 void AddStations(vector<station>& stations) {
 	station s;
@@ -327,19 +268,19 @@ int Load(vector<pipe>& pipes, vector<station>& stations) {
 }
 
 void SearchPipe(vector<pipe>& pipes) {
-	if (pipes.size() != 0) {
-		int input;
-		string* pipesName = StringArray(pipes.size());
-		int* pipesRepair = IntArray(pipes.size());
-		cout << "Choose the filter:\n";
-		cout << "1 - Name, 2 - Repair, 0 - Exit: ";
-		input = rightValue();
-		while ((input > 0 && input < 1) || (input > 2)) {
-			cout << "Please enter 1(name) or 2(repair) or 0(exit): ";
-			continue;
-		}
-		switch (input) {
-		case 1:
+	int input;
+	string* pipesName = StringArray(pipes.size());
+	int* pipesRepair = IntArray(pipes.size());
+	cout << "Choose the filter:\n";
+	cout << "1 - Name, 2 - Repair: ";
+	input = rightValue();
+	while ((input < 1) || (input > 2)) {
+		cout << "Please enter 1(name) or 2(repair): ";
+		break;
+	}
+	switch (input) {
+	case 1:
+		if (pipes.size() != 0) {
 			for (vector<pipe>::size_type i = 0; i < pipes.size(); i++) {
 				cout << "\nEnter the name of pipe: ";
 				cin.ignore(32767, '\n');
@@ -360,7 +301,13 @@ void SearchPipe(vector<pipe>& pipes) {
 
 			}
 			break;
-		case 2:
+		}
+		else {
+			cout << "Pipes wasn't added.\n";
+		}
+		break;
+	case 2:
+		if (pipes.size() != 0) {
 			for (vector<pipe>::size_type i = 0; i < pipes.size(); i++) {
 				cout << "\nIs pipe under repair? (1 - yes, 2 - no): ";
 				pipesRepair[i] = rightValue();
@@ -381,10 +328,13 @@ void SearchPipe(vector<pipe>& pipes) {
 					break;
 				}
 			}
-			break;
-		case 0:
-			break;
 		}
+		else {
+			cout << "Pipes wasn't added.\n";
+		}
+		break;
+	default:
+		break;
 	}
 }
 
@@ -392,66 +342,78 @@ void EditPipes(vector<pipe>& pipes) {
 	int input;
 	string* Name = StringArray(pipes.size());
 	int* Repair = IntArray(pipes.size());
-	cout << "What would you do?";
-	cout << "1 - Edit all pipes, 2 - Edit few pipes";
+	cout << "What would you do?\n";
+	cout << "1 - Edit all pipes, 2 - Edit few pipes: ";
 	input = rightValue();
 	while (input > 2 || input < 1) {
-		cout << "Please enter 1(edit all pipes) or 2(edit few pipes)";
+		cout << "Please enter 1(edit all pipes) or 2(edit few pipes): ";
 		input = rightValue();
 	}
 	switch (input) {
 	case 1:
-		for (vector<pipe>::size_type i = 0; i < pipes.size(); i++) {
-			cout << "Please enter the under repair sign of pipe (1 - under repair, 2 - not under repair): ";
-			Repair[i] = rightValue();
-			while (Repair[i] < 1 || Repair[i] > 2) {
-				cout << "Please enter 1(under repair) or 2(not under repair)";
-			}
-			while (pipes[i].repair == Repair[i]) {
-				cout << "Is the pipe under repair? ('yes'- 1 or 'no'- 2): ";
-				pipes[i].repair = rightValue();
+		if (pipes.size() != 0) {
+			for (vector<pipe>::size_type i = 0; i < pipes.size(); i++) {
 
-				while (pipes[i].repair < 1 || pipes[i].repair > 2) {
-					cout << "Please enter 1(yes) or 2(no): ";
-					pipes[i].repair = rightValue();
-					continue;
+				if (pipes[i].repair == 1) {
+					pipes[i].repair == 2;
 				}
-				cout << "\nPipes was edited.";
-				break;
+				else {
+					pipes[i].repair == 1;
+				}
 			}
+			cout << "Under repair sign of pipes was edited.\n" << endl;
 		}
+		else {
+			cout << "Pipes wasn't added.\n";
+		}
+		break;
 	case 2:
-		for (vector<pipe>::size_type i = 0; i < pipes.size(); i++) {
-			cout << "Enter the name of pipe you would edit: ";
-			cin.ignore(32767, '\n');
-			cin >> Name[i];
-			while (pipes[i].name != Name[i]) {
-				cout << "No pipes with this name. Try again: ";
+		if (pipes.size() != 0) {
+			for (vector<pipe>::size_type i = 0; i < pipes.size(); i++) {
+				cout << "\nEnter the name of pipe you would edit: ";
 				cin.ignore(32767, '\n');
 				cin >> Name[i];
-				break;
-			}
-			if (pipes[i].name == Name[i]) {
+				while (pipes[i].name != Name[i]) {
+					cout << "No pipes with this name. Try again: ";
+					cin.ignore(32767, '\n');
+					cin >> Name[i];
+					continue;
+				}
+				while (pipes[i].name == Name[i]) {
+					cout << "Is the pipe under repair? ('yes'- 1 or 'no'- 2): ";
+					pipes[i].repair = rightValue();
 
+					while (pipes[i].repair < 1 || pipes[i].repair > 2) {
+						cout << "Please enter 1(yes) or 2(no): ";
+						pipes[i].repair = rightValue();
+						continue;
+					}
+					cout << "\nPipes was edited.";
+					break;
+				}
 			}
 		}
+		break;
+	default:
+		break;
+	}
 }
 
-void SearchStation(vector<station>& stations) {
+; void SearchStation(vector<station>& stations) {
 	int input;
 	string* stationsName = StringArray(stations.size());
 	int* stationsNotWorkingWorkshops = IntArray(stations.size());
-	if (stations.size() != 0) {
-		cout << "\nChoose the filter:\n";
-		cout << "1 - Name, 2 - Number of not working workshops, 0 - Exit: ";
-		input = rightValue();
-		while ((input > 0 && input < 1) || (input > 2)) {
-			cout << "\nPlease enter 1(name) or 2(number of not working workshops) or 0(exit): ";
-			continue;
-		}
-		switch (input) {
-		case 1:
-			for (vector<station>::size_type i = 0; i < stations.size(); i++) {
+	cout << "\nChoose the filter:\n";
+	cout << "1 - Name, 2 - Number of not working workshops: ";
+	input = rightValue();
+	while ((input < 1) || (input > 2)) {
+		cout << "\nPlease enter 1(name) or 2(number of not working workshops): ";
+		break;
+	}
+	switch (input) {
+	case 1:
+		for (vector<station>::size_type i = 0; i < stations.size(); i++) {
+			if (stations.size() != 0) {
 				cout << "\nEnter the name of station: ";
 				cin.ignore(32767, '\n');
 				cin >> stationsName[i];
@@ -469,9 +431,14 @@ void SearchStation(vector<station>& stations) {
 					break;
 				}
 			}
-			break;
-		case 2:
-			for (vector<station>::size_type i = 0; i < stations.size(); i++) {
+			else {
+				cout << "Stations wasn't added.\n";
+			}
+		}
+		break;
+	case 2:
+		for (vector<station>::size_type i = 0; i < stations.size(); i++) {
+			if (stations.size() != 0) {
 				cout << "\nEnter the number of not working workshops: ";
 				stationsNotWorkingWorkshops[i] = rightValue();
 				while (stations[i].NotWorkingWorkshops == stationsNotWorkingWorkshops[i]) {
@@ -488,15 +455,191 @@ void SearchStation(vector<station>& stations) {
 					break;
 				}
 			}
-			break;
-		case 0:
-			break;
+			else {
+				cout << "Stations wasn't added.\n";
+			}
 		}
+		break;
 	}
 }
 
-int main()
-{
+void EditStations(vector<station>& stations) {
+	int input;
+	int input1;
+	int input2;
+	string* Name = StringArray(stations.size());
+	int* NotWorkingWorkshops = IntArray(stations.size());
+	cout << "What would you do?\n";
+	cout << "1 - Edit all stations, 2 - Edit few stations: ";
+	input = rightValue();
+	while (input > 2 || input < 1) {
+		cout << "Please enter 1(edit all stations) or 2(edit few stations): ";
+		input = rightValue();
+	}
+	switch (input) {
+	case 1:
+		cout << "\nChoose the filter:\n";
+		cout << "1 - Name, 2 - Number of not working workshops: ";
+		input1 = rightValue();
+		while ((input1 < 1) || (input1 > 2)) {
+			cout << "\nPlease enter 1(name) or 2(number of not working workshops): ";
+			break;
+		}
+		switch (input1) {
+		case 1:
+			if (stations.size() != 0) {
+				for (vector<station>::size_type i = 0; i < stations.size(); i++) {
+					cout << "\nEnter the name of station: ";
+					cin.ignore(32767, '\n');
+					cin >> Name[i];
+					while (Name[i] == stations[i].name) {
+						cout << "Enter the new number of working workshops: ";
+						stations[i].WorkshopsInOperation = rightValue();
+						while (stations[i].WorkshopsInOperation < 0) {
+							std::cout << "The value must be >= 0. Try again: ";
+							stations[i].WorkshopsInOperation = rightValue();
+							break;
+						}
+						while (stations[i].WorkshopsInOperation > stations[i].workshops) {
+							std::cout << "Number of working workshops can't be > number of workshops. Try again: ";
+							stations[i].WorkshopsInOperation = rightValue();
+							break;
+						}
+						break;
+					}
+					if (Name[i] != stations[i].name) {
+						cout << "No stations with this name.\n";
+						break;
+					}
+				}
+			}
+			break;
+		case 2:
+			if (stations.size() != 0) {
+				for (vector<station>::size_type i = 0; i < stations.size(); i++) {
+					cout << "\nEnter the number of not working workshops: ";
+					NotWorkingWorkshops[i] = rightValue();
+					while (NotWorkingWorkshops[i] < 0) {
+						std::cout << "The value must be >= 0. Try again: ";
+						NotWorkingWorkshops[i] = rightValue();
+						continue;
+					}
+					while (NotWorkingWorkshops[i] > stations[i].workshops) {
+						std::cout << "Number of working workshops can't be > number of workshops. Try again: ";
+						NotWorkingWorkshops[i] = rightValue();
+						continue;
+					}
+					while (stations[i].NotWorkingWorkshops == NotWorkingWorkshops[i]) {
+						cout << "Enter the new number of working workshops: ";
+						stations[i].WorkshopsInOperation = rightValue();
+						while (stations[i].WorkshopsInOperation < 0) {
+							std::cout << "The value must be >= 0. Try again: ";
+							stations[i].WorkshopsInOperation = rightValue();
+							continue;
+						}
+						while (stations[i].WorkshopsInOperation > stations[i].workshops) {
+							std::cout << "Number of working workshops can't be > number of workshops. Try again: ";
+							stations[i].WorkshopsInOperation = rightValue();
+							continue;
+						}
+						break;
+					}
+					if (stations[i].NotWorkingWorkshops != NotWorkingWorkshops[i]) {
+						cout << "No stations with this name.\n";
+						break;
+					}
+				}
+			}
+			else {
+				cout << "Stations wasn't added.\n";
+			}
+			break;
+		default:
+			break;
+		}
+	case 2:
+		if (stations.size() != 0) {
+			for (vector<station>::size_type i = 0; i < stations.size(); i++) {
+				cout << "\nChoose the filter:\n";
+				cout << "1 - Name, 2 - Number of not working workshops: ";
+				input2 = rightValue();
+				while ((input2 < 1) || (input2 > 2)) {
+					cout << "\nPlease enter 1(name) or 2(number of not working workshops): ";
+					break;
+				}
+				switch (input2) {
+				case 1:
+					cout << "\nEnter the name of station: ";
+					cin.ignore(32767, '\n');
+					cin >> Name[i];
+					if (stations[i].name == Name[i]) {
+						cout << "Enter the new number of worling workshops: ";
+						stations[i].WorkshopsInOperation = rightValue();
+						while (stations[i].WorkshopsInOperation < 0) {
+							std::cout << "The value must be >= 0. Try again: ";
+							stations[i].WorkshopsInOperation = rightValue();
+							continue;
+						}
+						while (stations[i].WorkshopsInOperation > stations[i].workshops) {
+							std::cout << "Number of working workshops can't be > number of workshops. Try again: ";
+							stations[i].WorkshopsInOperation = rightValue();
+							continue;
+						}
+						break;
+					}
+					if (stations[i].name != Name[i]) {
+						cout << "No stations with this name.\n";
+						break;
+					}
+					break;
+				case 2:
+					cout << "\nEnter the number of not working workshops: ";
+					NotWorkingWorkshops[i] = rightValue();
+					while (NotWorkingWorkshops[i] < 0) {
+						std::cout << "The value must be >= 0. Try again: ";
+						NotWorkingWorkshops[i] = rightValue();
+						continue;
+					}
+					while (NotWorkingWorkshops[i] > stations[i].workshops) {
+						std::cout << "Number of working workshops can't be > number of workshops. Try again: ";
+						NotWorkingWorkshops[i] = rightValue();
+						continue;
+					}
+					if (stations[i].NotWorkingWorkshops == NotWorkingWorkshops[i]) {
+						cout << "Enter the new number of working workshops: ";
+						stations[i].WorkshopsInOperation = rightValue();
+						while (stations[i].WorkshopsInOperation < 0) {
+							std::cout << "The value must be >= 0. Try again: ";
+							stations[i].WorkshopsInOperation = rightValue();
+							continue;
+						}
+						while (stations[i].WorkshopsInOperation > stations[i].workshops) {
+							std::cout << "Number of working workshops can't be > number of workshops. Try again: ";
+							stations[i].WorkshopsInOperation = rightValue();
+							continue;
+						}
+						break;
+					}
+					if (stations[i].NotWorkingWorkshops != NotWorkingWorkshops[i]) {
+						cout << "No stations with this name.\n";
+						break;
+					}
+					break;
+				default:
+					break;
+				}
+			}
+		}
+		else {
+			cout << "Stations wasn't added.\n";
+		}
+		break;
+	default:
+		break;
+	}
+}
+
+int main() {
 	vector <pipe> pipes;
 	vector <station> stations;
 	int i;
@@ -518,10 +661,10 @@ int main()
 			Output(pipes, stations);
 			continue;
 		case 4:
-			PipeEdit(p);
+			EditPipes(pipes);
 			continue;
 		case 5:
-			StationEdit(s);
+			EditStations(stations);
 			continue;
 		case 6:
 			Save(pipes, stations);
