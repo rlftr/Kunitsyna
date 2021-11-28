@@ -41,7 +41,7 @@ int rightValue() {
 }
 
 
-bool pipe::checkId(int& Id, vector<pipe>& pipes) {
+bool checkId(int& Id, vector<pipe>& pipes) {
 	for (int i = 0; i < pipes.size(); ++i)
 	{
 		if (Id == pipes[i].id)
@@ -57,7 +57,7 @@ int random(int r, int l) {
 	return l + (rand() % (r - l) + 1);
 }
 
-void pipe::AddPipes(vector<pipe>& pipes) {
+void AddPipes(vector<pipe>& pipes) {
 	pipe p;
 	int pipesId;
 		while (true) {
@@ -71,7 +71,7 @@ void pipe::AddPipes(vector<pipe>& pipes) {
 
 		cout << "Enter the name: ";
 		cin.ignore(32767, '\n');
-		getline(cin, p.name);
+		cin >> p.name;
 
 		std::cout << "Enter the diametr: ";
 		p.diametr = rightValue();
@@ -104,7 +104,7 @@ void pipe::AddPipes(vector<pipe>& pipes) {
 }
 
 
-bool station::checkId(int& Id, vector<station>& stations) {
+bool checkId(int& Id, vector<station>& stations) {
 	for (int i = 0; i < stations.size(); ++i)
 	{
 		if (Id == stations[i].id)
@@ -116,7 +116,7 @@ bool station::checkId(int& Id, vector<station>& stations) {
 }
 
 
-void station::AddStations(vector<station>& stations) {
+void AddStations(vector<station>& stations) {
 	station s;
 	int stationsId;
 	while (true) {
@@ -129,7 +129,7 @@ void station::AddStations(vector<station>& stations) {
 	std::cout << "Station id: " << s.id << "\n";
 	std::cout << "Enter the name: ";
 	cin.ignore(32767, '\n');
-	getline(cin, s.name);
+	cin >> s.name;
 	std::cout << "Enter the number of workshops: ";
 	s.workshops = rightValue();
 
@@ -219,24 +219,24 @@ void Save(vector<pipe>& pipes, vector<station>& stations) {
 	if (file.good()) {
 		for (vector<pipe>::size_type i = 0; i < pipes.size(); i++) {
 		    if (pipes.size() != 0) {
-				file << "\nPipes: \n";
-				file << "\nId: " << pipes[i].id;
-				file << "\nName: " << pipes[i].name;
-				file << "\nDiametr: " << pipes[i].diametr;
-				file << "\nLength: " << pipes[i].length;
-				file << "\nRepair ('yes' - 1, 'no' - 2): " << pipes[i].repair << "\n";
+				file << "\nPipes\n";
+				file << pipes[i].id << "\n";
+				file << pipes[i].name << "\n";
+				file << pipes[i].diametr << "\n";
+				file << pipes[i].length << "\n";
+				file << pipes[i].repair << "\n";
 			}
 		}
 
 		for (vector<station>::size_type i = 0; i < stations.size(); i++) {
 		    if (stations.size() != 0) {
-				file << "\nStations: \n";
-				file << "\nId: " << stations[i].id;
-				file << "\nName: " << stations[i].name;
-				file << "\nWorkshops: " << stations[i].workshops;
-				file << "\nWorkshops In Operation: " << stations[i].WorkshopsInOperation;
-				file << "\nNumber of not working workshops: " << stations[i].NotWorkingWorkshops;
-				file << "\nEfficiency: " << stations[i].efficiency << "\n";
+				file << "\nStations\n";
+				file << stations[i].id << "\n";
+				file << stations[i].name << "\n";
+				file << stations[i].workshops << "\n";
+				file << stations[i].WorkshopsInOperation << "\n";
+				file << stations[i].NotWorkingWorkshops << "\n";
+				file << stations[i].efficiency << "\n";
 			}
 		}
 		file.close();
@@ -244,29 +244,63 @@ void Save(vector<pipe>& pipes, vector<station>& stations) {
 	}
 }
 
-int Load(vector<pipe>& pipes, vector<station>& stations) {
-	ifstream inf("data.txt");
-	if (!inf) {
-		cerr << "data.txt couldn't be opened" << endl;
-		exit(1);
+void Load(vector<pipe>& pipes, vector<station>& stations) {
+	ifstream file;
+	int id;
+	int diametr;
+	int length;
+	int repair;
+	string name;
+	int workshops;
+	int WorkshopsInOperation;
+	int efficiency;
+	file.open("data.txt");
+	if (file.good()) {
+		for (vector<pipe>::size_type i = 0; i < pipes.size(); i++) {
+			if (pipes.size() != 0) {
+				while (!file.eof()) {
+					string type;
+					file >> type;
+					if (type == "Pipe") {
+						file >> id;
+						file >> diametr;
+						file >> length;
+						file >> repair;
+					}
+				}
+			}
+		}
+		for (vector<station>::size_type i = 0; i < stations.size(); i++) {
+			if (stations.size() != 0) {
+				while (!file.eof()) {
+					string type;
+					file >> type;
+					if (type == "Station") {
+						file >> id;
+						file >> name;
+						file >> workshops;
+						file >> WorkshopsInOperation;
+						file >> efficiency;
+					}
+				}
+			}
+		}
+		cout << "Loaded\n";
+		file.close();
 	}
-
-	while (inf) {
-		string strInput;
-		getline(inf, strInput);
-		cout << strInput << endl;
+	else {
+		cout << "data.txt can't be opened.\n";
 	}
-	return 0;
 }
 
-void pipe::SearchPipe(vector<pipe>& pipes) {
+void SearchPipe(vector<pipe>& pipes) {
 	int input;
 	string* pipesName = StringArray(pipes.size());
 	int* pipesRepair = IntArray(pipes.size());
 	cout << "Choose the filter:\n";
 	cout << "1 - Name, 2 - Repair: ";
 	input = rightValue();
-	while ((input < 1) || (input > 2)) {
+	while (input < 1 || input > 2) {
 		cout << "Please enter 1(name) or 2(repair): ";
 		break;
 	}
@@ -330,7 +364,7 @@ void pipe::SearchPipe(vector<pipe>& pipes) {
 	}
 }
 
-void pipe::EditPipes(vector<pipe>& pipes) {
+void EditPipes(vector<pipe>& pipes) {
 	int input;
 	string* Name = StringArray(pipes.size());
 	int* Repair = IntArray(pipes.size());
@@ -391,7 +425,7 @@ void pipe::EditPipes(vector<pipe>& pipes) {
 	}
 }
 
- void station::SearchStation(vector<station>& stations) {
+ void SearchStation(vector<station>& stations) {
 	int input;
 	string* stationsName = StringArray(stations.size());
 	int* stationsNotWorkingWorkshops = IntArray(stations.size());
@@ -455,7 +489,7 @@ void pipe::EditPipes(vector<pipe>& pipes) {
 	}
 }
 
-void station::EditStations(vector<station>& stations) {
+void EditStations(vector<station>& stations) {
 	int input;
 	int input1;
 	int input2;
@@ -631,9 +665,41 @@ void station::EditStations(vector<station>& stations) {
 	}
 }
 
-int main() {
-	vector <pipe> pipes;
-	vector <station> stations;
+void DeletePipes(vector<pipe>& pipes) {
+	string Name;
+	cout << "Enter the name of pipe you want to delete: \n";
+	cin.ignore(32767, '\n');
+	cin >> Name;
+	for (vector<pipe>::size_type i = 0; i < pipes.size(); i++) {
+		if (pipes.size() > 0) {
+			if (Name == pipes[i].name) {
+				pipes.erase(pipes.begin() + i);
+			}
+			else {
+				cout << "No pipe with this name.\n";
+			}
+		}
+	}
+}
+
+void DeleteStations(vector<station>& stations) {
+	string Name;
+	cout << "Enter the name of station you want to delete: \n";
+	cin.ignore(32767, '\n');
+	cin >> Name;
+	for (vector<station>::size_type i = 0; i < stations.size(); i++) {
+		if (stations.size() > 0) {
+			if (Name == stations[i].name) {
+				stations.erase(stations.begin() + i);
+			}
+			else {
+				cout << "No pipe with this name.\n";
+			}
+		}
+	}
+}
+
+int main(vector<pipe>& pipes, vector<station>& stations) {
 	int i;
 	pipe p{};
 	station s{};
@@ -668,6 +734,10 @@ int main() {
 			SearchPipe(pipes);
 		case 9:
 			SearchStation(stations);
+		case 10: 
+			DeletePipes(pipes);
+		case 11:
+			DeleteStations(stations);
 		case 0:
 			While = false;
 			break;

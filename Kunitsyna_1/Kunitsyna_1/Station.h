@@ -1,18 +1,19 @@
 #pragma once
 #include <vector>
 #include <string>
+using namespace std;
 
 class station {
 
 public:
-	static int id;
+	int id;
 	string name;
 	int workshops;
 	int WorkshopsInOperation;
 	int efficiency;
 	int NotWorkingWorkshops;
-	bool checkId(int& Id, vector<station>& stations);
-	void AddStations(vector<station>& stations);
-	void SearchStation(vector<station>& stations);
-	void EditStations(vector<station>& stations);
+	bool checkId();
+	void AddStations();
+	void SearchStation();
+	void EditStations();
 };
