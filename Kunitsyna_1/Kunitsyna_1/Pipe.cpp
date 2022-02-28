@@ -3,29 +3,26 @@
 #include <fstream>
 #include <vector>
 #include <unordered_map>
-#include <Pipe.h>
+#include "Pipe.h"
 
 using namespace std;
 
 int rightvalue();
-int pipe::ID = 0;
 
 pipe::pipe()
 {
-	this->id = ++ID;
+	id++;
 	this->name = "";
 	this->diametr = 0;
 	this->length = 0;
 	this->repair = 0;
 }
 
-istream& operator>> (pipe& p) {
-	istream in;
+void pipe::AddPipe(pipe& p) {
 	pipe::id++;
-	pipe p;
 	cout << "Enter the name: ";
-	in.ignore(32767, '\n');
-	getline(in, p.name);
+	cin.ignore(32767, '\n');
+	getline(cin, p.name);
 
 	cout << "Enter the diametr: ";
 	p.diametr = rightValue();
@@ -53,7 +50,7 @@ istream& operator>> (pipe& p) {
 		p.repair = rightValue();
 		continue;
 	}
-	return in;
+	return p;
 	cout << "\nPipe was added.\n";
 }
 
@@ -71,6 +68,34 @@ ostream& operator<< (ostream& out) {
 		}
 	}
 	return out;
+}
+
+void pipe::EditPipes(unordered_map<pipe, int>& pipes) {
+	int input;
+	string* Name = StringArray(pipes.size());
+	int* Repair = IntArray(pipes.size());
+	cout << "What would you do?\n";
+	cout << "1 - Edit all pipes, 2 - Edit few pipes: ";
+	input = rightValue();
+	while (input > 2 || input < 1) {
+		cout << "Please enter 1(edit all pipes) or 2(edit few pipes): ";
+		input = rightValue();
+	}
+	switch (input) {
+	case 1:
+		if (pipes.size() != 0) {
+			for (auto& i : pipes) {
+				if (i.second.repair == 1) {
+					i.second.repair == 2;
+				}
+				else {
+					i.second.repair == 1;
+				}
+			}
+			cout << "Under repair sign of pipes was edited.\n" << endl;
+
+		}
+	}
 }
 
 void pipe::SearchPipe(unordered_map<pipe, int>& pipes) {
@@ -161,4 +186,3 @@ void pipe::DeletePipes(unordered_map<pipe, int>& pipes) {
 	}
 }
 }
-

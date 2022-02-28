@@ -7,23 +7,22 @@
 using namespace std;
 
 int rightValue();
-int station::ID = 0;
 
 station::station()
 {
-	this->id = ++ID;
+	id++;
 	this->name = "";
 	this->workshops = 0;
 	this->WorkshopsInOperation = 0;
 	this->efficiency = 0;
 }
 
-istream& operator>> (station& s) {
-	istream in,
+
+void station::AddStation(station& s) {
 	station::id++;
 	cout << "Enter the name: ";
-	in.ignore(32767, '\n');
-	getline(in, s.name);
+	cin.ignore(32767, '\n');
+	getline(cin, s.name);
 	cout << "Enter the number of workshops: ";
 	s.workshops = rightValue();
 
@@ -62,13 +61,12 @@ istream& operator>> (station& s) {
 		cout << "Number of not working workshops: ";
 		cout << s.NotWorkingWorkshops;
 	}
-	return in;
+	return s;
 
 	cout << "\nStation was added.\n";
 }
 
-ostream& operator<< (ostream& out) {
-	const unordered_map<station, int> stations;
+ostream& operator<< (ostream& out, const unordered_map<station, int>& stations) {
 	out << "\nAll stations: \n";
 	if (stations.size() != 0) {
 		for (auto& i : stations) {
@@ -339,3 +337,4 @@ void station::DeleteStations(unordered_map<station, int>& stations) {
 		}
 	}
 }
+

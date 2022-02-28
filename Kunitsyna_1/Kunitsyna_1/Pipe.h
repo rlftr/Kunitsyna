@@ -6,13 +6,15 @@ using namespace std;
 class pipe {
 
 public:
-	int id;
-	static int ID;
+	unordered_map <int, pipe> pipes;
+	pipe();
+	static int id;
 	int diametr;
 	int length;
 	int repair;
 	string name;
-	istream& operator>> (pipe& p);
+	friend ostream& operator<< (ostream&, const unordered_map <int, pipe>&);
+	void AddPipe(pipe& p);
 	void SearchPipe(unordered_map<pipe, int>& pipes);
 	void EditPipes(unordered_map<pipe, int>& pipes);
 	void DeletePipes(unordered_map<pipe, int>& pipes);
