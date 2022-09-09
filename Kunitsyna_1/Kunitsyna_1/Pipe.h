@@ -1,21 +1,22 @@
 #pragma once
 #include <unordered_map>
 #include <string>
+#include <iostream>
 using namespace std;
 
 class pipe {
 
+	int pipeID;
 public:
-	unordered_map <int, pipe> pipes;
 	pipe();
-	static int id;
+	static int pipeMaxID;
 	int diametr;
 	int length;
-	int repair;
+	bool repair;
 	string name;
-	friend ostream& operator<< (ostream&, const unordered_map <int, pipe>&);
-	void AddPipe(pipe& p);
-	void SearchPipe(unordered_map<pipe, int>& pipes);
-	void EditPipes(unordered_map<pipe, int>& pipes);
-	void DeletePipes(unordered_map<pipe, int>& pipes);
+	int pipeGetID() const;
+	friend ostream& operator<< (ostream& out, const pipe& p);
+	friend istream& operator >> (istream& in, pipe& p);
+	friend ifstream& operator >> (ifstream& fin, pipe& p);
+	friend ofstream& operator << (ofstream& fout, const pipe& p);
 };

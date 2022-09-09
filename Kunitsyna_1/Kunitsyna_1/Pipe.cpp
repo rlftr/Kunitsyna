@@ -1,188 +1,203 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <vector>
 #include <unordered_map>
 #include "Pipe.h"
 
 using namespace std;
 
-int rightvalue();
+int pipe::pipeMaxID = 0;
+pipe::pipe() {
+	pipeID = ++pipeMaxID;
+}
 
-pipe::pipe()
+int pipe::pipeGetID() const
 {
-	id++;
-	this->name = "";
-	this->diametr = 0;
-	this->length = 0;
-	this->repair = 0;
+	return pipeID;
 }
 
-void pipe::AddPipe(pipe& p) {
-	pipe::id++;
-	cout << "Enter the name: ";
-	cin.ignore(32767, '\n');
-	getline(cin, p.name);
-
-	cout << "Enter the diametr: ";
-	p.diametr = rightValue();
-
-	while (p.diametr <= 0) {
-		cout << "The value must be > 0. Try again: ";
-		p.diametr = rightValue();
-		continue;
-	}
-
-	cout << "Enter the length: ";
-	p.length = rightValue();
-
-	while (p.length <= 0) {
-		cout << "The value must be > 0. Try again: ";
-		p.length = rightValue();
-		continue;
-	}
-
-	cout << "Is the pipe under repair? ('yes'- 1 or 'no'- 2):  ";
-	p.repair = rightValue();
-
-	while (p.repair < 1 || p.repair > 2) {
-		cout << "Please enter 1(yes) or 2(no): ";
-		p.repair = rightValue();
-		continue;
-	}
-	return p;
-	cout << "\nPipe was added.\n";
-}
-
-ostream& operator<< (ostream& out) {
-	const unordered_map<pipe, int> pipes;
-	out << "\nAll pipes:\n";
-	if (pipes.size() != 0) {
-		for (auto& i : pipes) {
-			out << "\nId: " << i.first;
-			out << "\nName: " << i.second.name;
-			out << "\nDiametr: " << i.second.diametr;
-			out << "\nLength: " << i.second.length;
-			out << "\nRepair ('yes' - 1, 'no' - 2): " << i.second.repair << "\n";
-			continue;
-		}
-	}
+ostream& operator << (ostream& out, const pipe& p)
+{
+	out << "\nId: " << p.pipeID;
+	out << "\nName: " << p.name;
+	out << "\nDiametr: " << p.diametr;
+	out << "\nLength: " << p.length;
+	out << "\nRepair: " << ((p.repair == 0) ? "in work" : "in repair") << "\n";
 	return out;
 }
 
-void pipe::EditPipes(unordered_map<pipe, int>& pipes) {
-	int input;
-	string* Name = StringArray(pipes.size());
-	int* Repair = IntArray(pipes.size());
+istream& operator >> (istream& in, pipe& p) {
+
+	cout << "Enter the name: ";
+	cin.ignore(32767, '\n');
+	getline(cin, p.name);
+	cout << "Enter the diametr: ";
+	p.diametr = rightValue(1, 1420);
+	cout << "Enter the length: ";
+	p.length = rightValue(10, 500000);
+	cout << "Is the pipe under repair? ('yes'- 1 or 'no'- 2):  ";
+	p.repair = rightValue(1, 2);
+	return in;
+	cout << "\nPipe was added.\n";
+}
+
+ifstream& operator >> (ifstream& fin, pipe& p) {
+
+	fin >> p.pipeID
+		>> p.name
+		>> p.length
+		>> p.diameter
+		>> p.repair;
+	return fin;
+}
+
+ofstream& operator << (ofstream& fout, const pipe& p)
+{
+	fout << "Pipe: " << endl
+		<< p.pipeID << endl
+		<< p.name << endl
+		<< p.length << endl
+		<< p.diameter << endl
+		<< p.repair << endl;
+	return fout;
+}
+
+void EditPipe(pipe& p)
+{
+	cout << "Is the pipe under repair? (1 - yes; 2 - no) : ";
+	p.repair = rightValue(1, 2);
+}
+
+pipe& SelectPipe(unordered_map <int, pipe>& pipes)
+{
+	cout << "Enter the index of pipe: ";
+	int index = rightValue(1, pipes.size());
+	return pipes[index];
+}
+
+template <typename T>
+using pipeFilter = bool(*)(const pipe& p, T param);
+
+bool CheckByPipeName(const pipe& p, string param)
+{
+	return p.name == param;
+}
+
+bool CheckByLength(const pipe& p, double param)
+{
+	return p.length >= param;
+}
+bool CheckByDiameter(const pipe& p, int param)
+{
+	return p.diametr >= param;
+}
+bool CheckByRepair(const pipe& p, bool param)
+{
+	return p.repair == param;
+}
+
+template <typename T>
+vector <int> FindPipesByFilter(const unordered_map <int, pipe>& map, pipeFilter <T> f, T param)
+{
+	vector <int> res;
+
+	for (auto& i : map)
+	{
+		if (f(i.second, param))
+			res.push_back(i.first);
+
+	}
+	if (res.size() == 0)
+	{
+		cout << "Pipes not found." << endl;
+	}
+	return res;
+}
+
+
+void EditPipes(vector <int>& v, unordered_map <int, pipe>& pipes) {
+	vector <int> vEdit;
 	cout << "What would you do?\n";
 	cout << "1 - Edit all pipes, 2 - Edit few pipes: ";
-	input = rightValue();
-	while (input > 2 || input < 1) {
-		cout << "Please enter 1(edit all pipes) or 2(edit few pipes): ";
-		input = rightValue();
-	}
-	switch (input) {
-	case 1:
-		if (pipes.size() != 0) {
-			for (auto& i : pipes) {
-				if (i.second.repair == 1) {
-					i.second.repair == 2;
-				}
-				else {
-					i.second.repair == 1;
-				}
-			}
-			cout << "Under repair sign of pipes was edited.\n" << endl;
 
+	if (rightValue(1, 2))
+	{
+		vEdit = v;
+	}
+
+	else
+	{
+		while (true)
+		{
+			cout << "Error. Try again: ";
+			int input = rightValue(1, (int)size(v));
+			if (input)
+			{
+				vEdit.push_back(v[i - 1]);
+			}
+			else
+			{
+				break;
+			}
 		}
+	}
+
+	cout << "Which pipes to select? (under repair - 1, not under repair - 2: ";
+	int input1 = rightValue(1, 2);
+	if (input1 != 1 || input1 != 2){
+
+		cout << "Error/ Try again: ";
+		input1 = rightValue(1, 2);
+	}
+	else
+	{
+		for (int i : vEdit)
+			pipes[i].repair = (bool)input1;
 	}
 }
 
-void pipe::SearchPipe(unordered_map<pipe, int>& pipes) {
-	int input;
-	string* pipesName = StringArray(pipes.size());
-	int* pipesRepair = IntArray(pipes.size());
-	cout << "Choose the filter:\n";
-	cout << "1 - Name, 2 - Repair: ";
-	input = rightValue();
-	while (input < 1 || input > 2) {
-		cout << "Please enter 1(name) or 2(repair): ";
-		break;
-	}
-	switch (input) {
-	case 1:
-		if (pipes.size() != 0) {
-			for (auto& i : pipes) {
-				cout << "\nEnter the name of pipe: ";
-				cin.ignore(32767, '\n');
-				cin >> pipesName[i];
-
-				while (i.second.name == pipesName[i]) {
-					cout << "\nId: " << i.first;
-					cout << "\nName: " << i.second.name;
-					cout << "\nDiametr: " << i.second.diametr;
-					cout << "\nLength: " << i.second.length;
-					cout << "\nRepair: " << i.second.repair;
-					break;
-				}
-				if (i.second.name != pipesName[i]) {
-					cout << "No pipes with this name.\n";
-					break;
-				}
-
-			}
-			break;
-		}
-		else {
-			cout << "Pipes wasn't added.\n";
-		}
-		break;
-	case 2:
-		if (pipes.size() != 0) {
-			for (auto& i : pipes) {
-				cout << "\nIs pipe under repair? (1 - yes, 2 - no): ";
-				pipesRepair[i] = rightValue();
-				while (pipesRepair[i] < 1 || pipesRepair[i] > 2) {
-					cout << "\nPlease enter 1 - yes or 2 - no: ";
-					continue;
-				}
-				while (i.second.repair == pipesRepair[i]) {
-					cout << "\nId: " << pipes[i].id;
-					cout << "\nName: " << pipes[i].name;
-					cout << "\nDiametr: " << pipes[i].diametr;
-					cout << "\nLength: " << pipes[i].length;
-					cout << "\nRepair: " << pipes[i].repair;
-					break;
-				}
-				if (i.second.repair != pipesRepair[i]) {
-					cout << "No pipes with this under repair sign";
-					break;
-				}
-			}
-		}
-		else {
-			cout << "Pipes wasn't added.\n";
-		}
-		break;
-	default:
-		break;
-	}
+void SearchPipe(unordered_map <int, pipe>& pipes)
+{
+        while (true)
+        {
+            findPipeMenu();
+            vector <int> result;
+            switch (rightValue(0, 2))
+            {
+            case 1:
+            {
+                string pName;
+                cout << "Find pipe by name:  ";
+                cin.ignore(10000, '\n');
+                getline(cin, pName);
+                result = FindPipesByFilter(pipes, CheckByPipeName, pName);
+				cout << result;
+                break;
+            }
+            
+            case 2:
+            {
+                cout << "Find pipe by repair (1 - under repair; 2 - not under repair) :  ";
+                bool repair = rightValue(1, 2);
+                result = FindPipesByFilter(mapPipe, CheckByStatus, status);
+				cout << result;
+                break;
+            }
+            case 0:
+            {
+                return;
+            }
+            default:
+            {
+                cout << "Error. Try again: " << endl;
+                break;
+            }
+            }
+        }
 }
 
-
-void pipe::DeletePipes(unordered_map<pipe, int>& pipes) {
-	int ID;
-	cout << "Enter the id of pipe you want to delete: \n";
-	ID = rightValue();
-	for (auto& i : pipes) {
-		if (pipes.count(ID) != 0) {
-			while (ID != -1 && pipes.count(ID) != 0) {
-				stations.erase(pipes.find(ID));
-			}
-		}
-		else {
-			cout << "No pipe with this id.\n";
-		}
-	}
-}
+void DeletePipe(unordered_map<pipe, int>& pipes) {
+	cout << "Enter the index of pipe: ";
+	int index = rightValue(1, pipes.size());
+	pipes.erase(index);
 }

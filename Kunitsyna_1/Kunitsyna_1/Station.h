@@ -1,23 +1,23 @@
 #pragma once
 #include <unordered_map>
 #include <string>
+#include <iostream>
 using namespace std;
 
 class station {
 
+	int stationID;
 public:
-	unordered_map <int, station> stations;
 	station();
-	static int id;
+	static int stationMaxID;
 	string name;
 	int workshops;
-	int WorkshopsInOperation;
+	int workingWorkshops;
 	int efficiency;
-	int NotWorkingWorkshops;
-	friend ostream& operator<< (ostream&, const unordered_map <int, station>&);
-	void AddStation(station& s);
-	void SearchStation(unordered_map<station, int>& stations);
-	void EditStations(unordered_map<station, int>& stations);
-	void DeleteStations(unordered_map<station, int>& stations);
+	int stationGetID() const;
+	friend ostream& operator<< (ostream& out, const station& s);
+	friend istream& operator >> (istream& in, station& s);
+	friend ofstream& operator << (ofstream& fout, const station& s);
+	friend ifstream& operator >> (ifstream& fin, station& s);
 };
 

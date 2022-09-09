@@ -9,8 +9,6 @@
 #include "Pipe.h"
 
 using namespace std;
-int pipe::id = 0;
-int station::id = 0;
 
 void menu()
 {
@@ -29,150 +27,96 @@ void menu()
 		<< "0. Exit\n";
 }
 
-int rightValue() {
-	int enter;
-	while (true) {
-		std::cin >> enter;
-		if (cin.fail()) {
-			cin.clear();
-			cin.ignore(32767, '\n');
-			std::cout << "Error. Try again: ";
-		}
-		else {
-			return enter;
-		}
-	}
-}
-
-string* StringArray(int lines)
+void findPipeMenu()
 {
-	string* array = new string[lines];
-	return array;
+	cout << "\n   Menu." << endl
+		<< "1. Find pipe by name" << endl
+		<< "2. Find pipe by repair" << endl
+		<< "0. Back to menu" << endl;
 }
 
-int* IntArray(int lines)
+void findStationMenu()
 {
-	int* array = new int[lines];
-	return array;
+	cout << "\n   Menu." << endl
+		<< "1. Find station by name" << endl
+		<< "2. Find station by number of not working workshops"  << endl
+		<< "0. Back to menu" << endl;
 }
 
-void Save(unordered_map<pipe, int>& pipes, unordered_map<station, int>& stations) {
-	ofstream file;
-	int id;
-	int diametr;
-	int length;
-	int repair;
-	string name;
-	int workshops;
-	int WorkshopsInOperation;
-	int efficiency;
-	int NotWorkingWorkshops;
-	file.open("data.txt");
-	if (file.good()) {
-		if (pipes.size() != 0) {
-		for (auto& i : pipes) {
-				file << "\nPipes\n";
-				file << i.first << "\n";
-				file << i.second.name << "\n";
-				file << i.second.diametr << "\n";
-				file << i.second.length << "\n";
-				file << i.second.repair << "\n";
-			}
-		}
+template <typename T>
+T rightValue(T min, T max)
+{
+	T x;
+	while ((cin >> x).fail() || x < min || x > max)
+	{
+		cin.clear();
+		cin.ignore(10000, '\n');
+		cout << "Error. Enter number (" << min << "-" << max << ") again:";
+	}
+	return x;
 
-			if (stations.size() != 0) {
-				for (auto& i : stations) {
-				file << "\nStations\n";
-				file << i.first << "\n";
-				file << i.second.name << "\n";
-				file << i.second.workshops << "\n";
-				file << i.second.WorkshopsInOperation << "\n";
-				file << i.second.NotWorkingWorkshops << "\n";
-				file << i.second.efficiency << "\n";
-			}
-		}
-		file.close();
-		cout << "Saved\n";
-	}
-	else {
-		cout << "Could't save to file";
-	}
 }
 
-void Load(unordered_map<pipe, int>&pipes, unordered_map<station, int>&stations) {
-	ifstream file;
-	int id;
-	int diametr;
-	int length;
-	int repair;
-	string name;
-	int workshops;
-	int WorkshopsInOperation;
-	int efficiency;
-	file.open("data.txt");
-	if (file.good()) {
-		for (auto& i : pipes) {
-			if (pipes.size() != 0) {
-				while (!file.eof()) {
-					string type;
-					file >> type;
-					if (type == "Pipe") {
-						file >> id;
-						file >> diametr;
-						file >> length;
-						file >> repair;
-					}
-				}
-			}
-		}
-		for (auto& i : stations) {
-			if (stations.size() != 0) {
-				while (!file.eof()) {
-					string type;
-					file >> type;
-					if (type == "Station") {
-						file >> id;
-						file >> name;
-						file >> workshops;
-						file >> WorkshopsInOperation;
-						file >> efficiency;
-					}
-				}
-			}
-		}
-		cout << "Loaded\n";
-		file.close();
-	}
-	else {
-		cout << "data.txt can't be opened.\n";
-	}
-}
 
 int main(unordered_map<pipe, int>& pipes, unordered_map<station, int>& stations) {
-	int i;
-	pipe p1, p;
-	station s1, s;
-	int a;
-	bool While = true;
-	while (While) {
+	bool pipeExists = false;
+	bool stationExists = false;
+	unordered_map <int, pipe> pipes = {};
+	unordered_map <int, station> stations = {};
+	while (1) {
 		menu();
-		cin >> a;
-		switch (a) {
+		switch (rightValue(0, 11)) {
 		case 1:
-			p1.AddPipe(p);
+			pipe p = {};
+			cin >> p;
+			pipeExists = true;
+			pipes.insert({ p.pipeGetID(), p });
 			continue;
 		case 2:
-			s1.AddStation(s);
+			station s = {};
+			cin >> s;
+			stationExists = true;
+			stations.insert({ s.stationGetID(), s });
 			continue;
 		case 3:
-			cout << p1.pipes;
-			cout << s1.stations;
+			if (pipes.size())
+			{
+				cout << "Pipe's MaxID: " << pipe::pipeMaxID << endl;
+				for (auto const& i : pipes)
+				{
+					cout << i.second;
+				}
+			}
+			if (stations.size())
+			{
+				cout << "Station's MaxID: "<< station::stationMaxID << endl;
+				for (auto const& i : stations)
+				{
+					cout << i.second;
+				}
+			}
+			if (!pipeExists && !stationExists)
+				cout << "Stations and pipes not found." << endl;
 			continue;
 		case 4:
-			p1.EditPipes(pipes);
+			if (pipeExists)
+			{
+				EditPipes(SelectPipe(pipes));
+			}
+			else
+			{
+				cout << "Pipes not found." << endl;
+			}
 			continue;
 		case 5:
-			s1.EditStations(stations);
+			if (stationExists)
+			{
+				EditStations(SelectStation(stations));
+			}
+			else
+			{
+				cout << "Stations not found." << endl;
+			}
 			continue;
 		case 6:
 			Save(pipes, stations);
@@ -185,14 +129,30 @@ int main(unordered_map<pipe, int>& pipes, unordered_map<station, int>& stations)
 		case 9:
 			s1.SearchStation(stations);
 		case 10:
-			p1.DeletePipes(pipes);
+			if (pipeExists)
+			{
+				DeletePipe(pipes);
+			}
+			else
+			{
+				cout << "Pipes not found." << endl;
+			}
+			break;
 		case 11:
-			s1.DeleteStations(stations);
+			if (stationExists)
+			{
+				DeleteStation(stations);
+			}
+			else
+			{
+				cout << "Stations not found." << endl;
+			}
+			break;
 		case 0:
-			While = false;
+			return 0;
 			break;
 		default:
-			cout << "Error\n\n";
+			cout << "Error. Try again: \n\n";
 			continue;
 		}
 		return 0;
