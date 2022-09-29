@@ -140,6 +140,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Kunitsyna_1.cpp" />
+    <ClCompile Include="Pipe.cpp" />
+    <ClCompile Include="Station.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Pipe.h" />
+    <ClInclude Include="Station.h" />
+    <ClInclude Include="Utils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="data.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
