@@ -1,4 +1,5 @@
 
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -20,10 +21,9 @@ void menu()
 		<< "5. Edit Stations\n"
 		<< "6. Save\n"
 		<< "7. Load\n"
-		<< "8. Search Pipe\n"
-		<< "9. Search Station\n"
-		<< "10. Delete Pipes\n"
-		<< "11. Delete Stations\n"
+		<< "8. Search pipes and stations\n"
+		<< "9. Delete Pipes\n"
+		<< "10. Delete Stations\n"
 		<< "0. Exit\n";
 }
 
@@ -39,7 +39,7 @@ void findStationMenu()
 {
 	cout << "\n   Menu." << endl
 		<< "1. Find station by name" << endl
-		<< "2. Find station by number of not working workshops" << endl
+		<< "2. Find station by percent of not working workshops" << endl
 		<< "0. Back to menu" << endl;
 }
 
@@ -47,13 +47,13 @@ void findStationMenu()
 
 string inputFileName()
 {
-	string fname;
+	string fileName;
 	cout << "Enter the file name: ";
 	cin.clear();
 	cin.ignore(10000, '\n');
-	cin >> fname;
-	fname = fname + ".txt";
-	return fname;
+	cin >> fileName;
+	fileName = fileName + ".txt";
+	return fileName;
 }
 
 void EditStation(station& s)
@@ -105,9 +105,9 @@ bool CheckByPipeName(const pipe& p, string param)
 	return p.name == param;
 }
 
-bool CheckByRepair(const pipe& p, bool param)
+bool CheckByRepair(const pipe& p, int param)
 {
-	return p.repair == param;
+	return p.repair <= param;
 }
 
 template <typename T>
@@ -147,13 +147,11 @@ vector <int> FindStationsByFilter(const unordered_map <int, station>& map, stati
 void EditPipes(vector <int>& v, unordered_map <int, pipe>& pipes) {
 	vector <int> vEdit;
 	cout << "What would you do?\n";
-	cout << "1 - Edit all pipes, 2 - Edit few pipes: ";
-
-	if (rightValue(1, 2))
+	cout << "1 - Edit all pipes, 0 - Edit few pipes: ";
+	if (rightValue(0, 1))
 	{
 		vEdit = v;
 	}
-
 	else
 	{
 		while (true)
@@ -162,7 +160,7 @@ void EditPipes(vector <int>& v, unordered_map <int, pipe>& pipes) {
 			int i = rightValue(0, (int)size(v));
 			if (i)
 			{
-				vEdit.push_back(v[i-1]);
+				vEdit.push_back(v[i - 1]);
 			}
 			else
 			{
@@ -170,8 +168,7 @@ void EditPipes(vector <int>& v, unordered_map <int, pipe>& pipes) {
 			}
 		}
 	}
-
-	cout << "Which pipes to select? (under repair - 1, not under repair - 2, back to menu - 0: ";
+	cout << "All selected: under repair - 1, not under repair - 2, back to menu - 0: ";
 	int input1 = rightValue(0, 2);
 	if (input1 == 0) {
 		for (int id : vEdit)
@@ -184,118 +181,107 @@ void EditPipes(vector <int>& v, unordered_map <int, pipe>& pipes) {
 	else
 	{
 		for (int i : vEdit)
-			pipes[i].repair = (bool)input1;
+			pipes[i].repair = (int)input1;
 	}
 }
 
 template <typename typeElement>
-void printVectNumElements(unordered_map <int, typeElement>& map, const vector <int>& vect)
+void printMapElements(unordered_map <int, typeElement>& map, const vector <int>& v)
 {
-	int count = 0;
-	for (int i : vect)
+	for (int i : v)
 	{
-		cout << "# " << ++count << endl;
 		cout << map[i];
 	}
 }
 
-void EditStations(vector <int>& v, unordered_map <int, station>& stations)
+
+void Search(unordered_map <int, station>& stations, unordered_map <int, pipe>& pipes)
 {
-	vector <int> vEdit = v;
-	cout << "All selected: delete[-1]/ not change[0]: ";
-	if (rightValue(-1, 0))
+	cout << "What search? (0 - station, 1 - pipe): \n";
+	if (rightValue(0, 1))
 	{
-		for (int id : vEdit)
+		while (true)
 		{
-			auto search = stations.find(id);
-			if (search != stations.end())
-				stations.erase(search);
+			findPipeMenu();
+			vector <int> result;
+			switch (rightValue(0, 2))
+			{
+			case 1:
+			{
+				string pName;
+				cout << "Find pipe by name:  \n";
+				cin.ignore(10000, '\n');
+				getline(cin, pName);
+				result = FindPipesByFilter(pipes, CheckByPipeName, pName);
+				break;
+			}
+			case 2:
+			{
+				cout << "Find pipe by repair (1 - under repair, 2 - not under repair):  \n";
+				int repair = rightValue(1, 2);
+				result = FindPipesByFilter(pipes, CheckByRepair, repair);
+				break;
+			}
+
+			case 0:
+			{
+				return;
+			}
+			default:
+			{
+				cout << "Error" << endl;
+				break;
+			}
+			}
+			if (size(result))
+			{
+				printMapElements(pipes, result);
+				EditPipes(result, pipes);
+			}
 		}
 	}
-}
-void SearchStation(unordered_map <int, station>& stations) {
-	while (true)
+	else
 	{
-		findStationMenu();
-		vector <int> result;
-		switch (rightValue(0, 2))
+		while (true)
 		{
-		case 1:
-		{
-			string sName;
-			cout << "Find station by name: ";
-			cin.ignore(10000, '\n');
-			getline(cin, sName);
-			result = FindStationsByFilter(stations, CheckByName, sName);
-			break;
-		}
-		case 2:
-		{
-			cout << "Find station by percent of not working workshops : ";
-			int percent = rightValue(0, 100);
-			result = FindStationsByFilter(stations, CheckByPercent, percent);
-			break;
-		}
-		case 0:
-		{
-			return;
-		}
-		default:
-		{
-			cout << "Error. Try again: " << endl;
-			break;
-		}
-		if (size(result))
-		{
-			printVectNumElements(stations, result);
-			EditStations(result, stations);
-		}
+			findStationMenu();
+			vector <int> result;
+			switch (rightValue(0, 2))
+			{
+			case 1:
+			{
+				string sName;
+				cout << "Find station by name: \n";
+				cin.ignore(10000, '\n');
+				getline(cin, sName);
+				result = FindStationsByFilter(stations, CheckByName, sName);
+				break;
+			}
+			case 2:
+			{
+				cout << "Find station by percent of not working workshops: \n";
+				int percent = rightValue(0, 100);
+				result = FindStationsByFilter(stations, CheckByPercent, percent);
+				break;
+			}
+			case 0:
+			{
+				return;
+			}
+			default:
+			{
+				cout << "Error" << endl;
+				break;
+			}
+			}
+			if (size(result))
+			{
+				printMapElements(stations, result);
+			}
 		}
 	}
 }
 
-void SearchPipe(unordered_map <int, pipe>& pipes)
-{
-	while (true)
-	{
-		findPipeMenu();
-		vector <int> result;
-		switch (rightValue(0, 2))
-		{
-		case 1:
-		{
-			string pName;
-			cout << "Find pipe by name:  ";
-			cin.ignore(10000, '\n');
-			getline(cin, pName);
-			result = FindPipesByFilter(pipes, CheckByPipeName, pName);
-			break;
-		}
-
-		case 2:
-		{
-			cout << "Find pipe by repair (1 - under repair; 2 - not under repair) :  ";
-			bool repair = rightValue(1, 2);
-			result = FindPipesByFilter(pipes, CheckByRepair, repair);
-			break;
-		}
-		case 0:
-		{
-			return;
-		}
-		default:
-		{
-			cout << "Error. Try again: " << endl;
-			break;
-		}
-		if (size(result))
-		{
-			printVectNumElements(pipes, result);
-			EditPipes(result, pipes);
-		}
-		}
-	}
-}
 
 void printPipes(const unordered_map <int, pipe>& pipes)
 {
@@ -315,13 +301,13 @@ void printStations(const unordered_map <int, station>& stations)
 
 void DeleteStation(unordered_map<int, station>& stations) {
 	cout << "Enter the index of station: ";
-	int i = rightValue(1, 1000);
+	unsigned int i = rightValue(1u, stations.size());
 	stations.erase(i);
 }
 
 void DeletePipe(unordered_map<int, pipe>& pipes) {
 	cout << "Enter the index of pipe: ";
-	int i = rightValue(1, 1000);
+	unsigned int i = rightValue(1u, pipes.size());
 	pipes.erase(i);
 }
 
@@ -333,7 +319,7 @@ int main() {
 	unordered_map <int, station> stations = {};
 	while (1) {
 		menu();
-		switch (rightValue(0,11)) {
+		switch (rightValue(0, 11)) {
 		case 1: {
 			pipe p;
 			cin >> p;
@@ -421,7 +407,7 @@ int main() {
 				}
 				else
 				{
-					cout << "error writing to file '" << FileName << "'" << endl;
+					cout << "Error" << endl;
 				}
 				fout.close();
 			}
@@ -448,17 +434,18 @@ int main() {
 			{
 				cout << "Pipes and stations not found." << endl;
 			}
+			cout << "Saved.\n";
 			continue;
 		}
 		case 7: {
 			pipe p;
 			station s;
 			int a = 0, b = 0;
-			int line_no = 0;
+			int l = 0;
 			string strr = {};
 			ifstream fin;
-			string FileName = inputFileName();
-			fin.open(FileName, ios::in);
+			string fileName = inputFileName();
+			fin.open(fileName, ios::in);
 			if (fin.is_open())
 			{
 				pipes.clear();
@@ -474,7 +461,7 @@ int main() {
 						pipeExists = true;
 						a++;
 					}
-					else if (str == "cs")
+					else if (str == "Station")
 					{
 						fin >> s;
 						stations.insert({ s.stationGetID(), s });
@@ -488,15 +475,15 @@ int main() {
 				cout << "Error" << endl;
 			}
 			fin.close();
-			fin.open(FileName, ios::in);
+			fin.open(fileName, ios::in);
 			if (a > 0 && b > 0)
 			{
-				while (line_no != 2 && getline(fin, strr))
+				while (l != 2 && getline(fin, strr))
 				{
-					++line_no;
-					if (line_no == 1)
+					++l;
+					if (l == 1)
 						pipe::pipeMaxID = stoi(strr);
-					if (line_no == 2)
+					if (l == 2)
 						station::stationMaxID = stoi(strr);
 				}
 			}
@@ -510,36 +497,36 @@ int main() {
 				getline(fin, strr);
 				station::stationMaxID = stoi(strr);
 			}
-
+			cout << "Loaded.\n";
 			continue;
 		}
 		case 8: {
-			SearchPipe(pipes);
+			Search(stations, pipes);
+			continue;
 		}
 		case 9: {
-			SearchStation(stations);
-		}
-		case 10: {
 			if (pipeExists)
 			{
 				DeletePipe(pipes);
+				cout << "Deleted.\n";
 			}
 			else
 			{
 				cout << "Pipes not found." << endl;
 			}
-			break;
+			continue;
 		}
-		case 11: {
+		case 10: {
 			if (stationExists)
 			{
 				DeleteStation(stations);
+				cout << "Deleted.\n";
 			}
 			else
 			{
 				cout << "Stations not found." << endl;
 			}
-			break;
+			continue;
 		}
 		case 0:
 			return 0;
@@ -551,6 +538,11 @@ int main() {
 		return 0;
 	}
 }
+
+
+
+
+
 
 
 
